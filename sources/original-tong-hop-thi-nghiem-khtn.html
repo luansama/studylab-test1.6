@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Lab - Tổng Hợp Thí Nghiệm Vật Lý (KHTN)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .container {
+            width: 100%;
+            max-width: 1040px;
+        }
+        /* Thanh điều hướng tổng hợp các thí nghiệm */
+        .main-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            background: #ffffff;
+            padding: 10px 14px;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+        }
+        .main-tab-btn {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1.5px solid #cbd5e1;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 13.5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 210px;
+            justify-content: center;
+        }
+        .main-tab-btn:hover { background: #e2e8f0; }
+        .main-tab-btn.active {
+            background: #4f46e5;
+            color: #ffffff;
+            border-color: #4f46e5;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.28);
+        }
+
+        /* Sub-tabs cho phần Lực */
+        .sub-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .sub-tab-btn {
+            background: #ffffff;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+            padding: 9px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .sub-tab-btn:hover { background: #f1f5f9; }
+        .sub-tab-btn.active {
+            background: #0284c7;
+            color: #ffffff;
+            border-color: #0284c7;
+            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.25);
+        }
+
+        .header {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            padding: 18px 24px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+        }
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2.15fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 860px) {
+            .main-grid { grid-template-columns: 1fr; }
+        }
+        .card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(15, 23, 42, 0.05);
+        }
+        canvas {
+            background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 100%);
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            width: 100%;
+            height: auto;
+            display: block;
+            touch-action: none;
+        }
+        button.action-btn {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 9px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.15s ease;
+        }
+        button.action-btn:hover { background: #4338ca; transform: translateY(-1px); }
+        .btn-active { background: #059669 !important; box-shadow: 0 0 10px rgba(5, 150, 105, 0.4); }
+        .btn-reset { background: #e11d48 !important; }
+        .btn-reset:hover { background: #be123c !important; }
+        .badge {
+            background: #e0f2fe;
+            color: #0284c7;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .hidden { display: none !important; }
+        .status-box p { margin: 8px 0; }
+        .control-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f8fafc;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .material-btn, .btn-mode {
+            background: #f1f5f9;
+            border: 1.5px solid #cbd5e1;
+            color: #334155;
+            padding: 8px 13px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 12.5px;
+            transition: all 0.2s;
+        }
+        .material-btn.active {
+            background: #4f46e5;
+            border-color: #4f46e5;
+            color: white;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+        }
+        .btn-mode.active {
+            background: #0284c7;
+            color: #ffffff;
+            border-color: #0284c7;
+        }
+
+        /* Sliders */
+        .slider-panel {
+            background: #f8fafc;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            margin-top: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .slider-row label {
+            font-size: 13px;
+            font-weight: 700;
+            min-width: 100px;
+        }
+        .slider-row input[type="range"] {
+            flex: 1;
+            min-width: 180px;
+            height: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Thanh đo năng lượng con lắc */
+        .energy-bars {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 12px;
+        }
+        .bar-item { margin-bottom: 8px; }
+        .bar-item:last-child { margin-bottom: 0; }
+        .bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+        .bar-track {
+            width: 100%;
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .bar-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 6px;
+            transition: width 0.05s linear;
+        }
+
+        /* Miếng che kết luận */
+        .conclusion-wrapper {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            margin-top: 14px;
+        }
+        .conclusion-cover {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #4f46e5, #0284c7);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: transform 0.4s ease, opacity 0.4s ease;
+            z-index: 2;
+            text-align: center;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        .conclusion-cover:hover {
+            background: linear-gradient(135deg, #4338ca, #0369a1);
+        }
+        .conclusion-cover.revealed {
+            transform: translateY(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .conclusion-box {
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            color: #065f46;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- THANH CHỌN CHỦ ĐỀ THÍ NGHIỆM TỔNG HỢP -->
+        <div class="main-nav">
+            <button class="main-tab-btn active" id="navLabForce" onclick="switchMainLab('force')">
+                🧲 1. Lực Tiếp Xúc & Không Tiếp Xúc (Lớp 6)
+            </button>
+            <button class="main-tab-btn" id="navLabSound" onclick="switchMainLab('sound')">
+                🔊 2. Khảo Sát Sự Phản Xạ Âm (Lớp 7)
+            </button>
+            <button class="main-tab-btn" id="navLabEnergy" onclick="switchMainLab('energy')">
+                ⚡ 3. Động Năng & Thế Năng Con Lắc (Lớp 9)
+            </button>
+        </div>
+
+        <!-- ===================================================================== -->
+        <!-- PHẦN 1: LỰC TIẾP XÚC & LỰC KHÔNG TIẾP XÚC (KHTN 6)                    -->
+        <!-- ===================================================================== -->
+        <div id="labForceWrapper">
+            <div class="sub-tabs">
+                <button class="sub-tab-btn active" id="tabForce1" onclick="switchForceSubLab('exp1')">
+                    🚗 Thí nghiệm 1: Lực tiếp xúc (Lò xo lá tròn & Xe lăn)
+                </button>
+                <button class="sub-tab-btn" id="tabForce2" onclick="switchForceSubLab('exp2')">
+                    🧲 Thí nghiệm 2: Lực không tiếp xúc (Hai xe nam châm)
+                </button>
+            </div>
+
+            <!-- Thí nghiệm 1.1: Lực tiếp xúc -->
+            <div id="forceExp1Section">
+                <div class="header">
+                    <div>
+                        <span class="badge">KHTN 6 &bull; Hình 40.4</span>
+                        <h1 style="margin: 8px 0 4px 0; font-size: 20px; color: #0f172a;">Thí Nghiệm 1: Tìm Hiểu Về Lực Tiếp Xúc</h1>
+                        <p style="color: #64748b; font-size: 13px; margin: 0;">Lò xo lá tròn bung tới vạch B. Quan sát khi nào lò xo đẩy được xe lăn.</p>
+                    </div>
+                    <button class="action-btn btn-reset" onclick="resetForceExp1()">🔄 Đặt lại</button>
+                </div>
+
+                <div class="main-grid">
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <span style="font-size: 13px; color: #64748b; font-weight: 600;">MÔ PHỎNG THÍ NGHIỆM 1 (LÒ XO LÁ TRÒN)</span>
+                            <span id="exp1PosText" style="font-size: 12px; color: #0284c7; font-weight: 600;">Đuôi xe đang đặt tại vạch A (Ngoài tầm lò xo)</span>
+                        </div>
+                        <canvas id="forceCanvas1" width="640" height="340"></canvas>
+                        <div class="control-group">
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                <button class="action-btn" onclick="setCarPosition('A')">1. Đặt xe ở vạch A (Xa)</button>
+                                <button class="action-btn" style="background: #059669;" onclick="setCarPosition('B')">2. Đặt xe ở vạch B (Sát tầm bung)</button>
+                            </div>
+                            <button class="action-btn" style="background: #ea580c;" onclick="releaseSpring()">⚡ Thả chốt lò xo</button>
+                        </div>
+                    </div>
+
+                    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <h3 style="margin-top: 0; font-size: 15px; color: #0f172a;">📋 Hướng dẫn & Quan sát</h3>
+                            <ol style="padding-left: 18px; font-size: 13px; color: #334155; line-height: 1.6; margin-bottom: 12px;">
+                                <li>Để xe ở <b>vạch A</b> (lò xo đang nén có dây chốt), bấm <b>Thả chốt lò xo</b> &rarr; Lò xo bung tới vạch B nhưng không chạm xe.</li>
+                                <li>Chuyển xe lại <b>vạch B</b>, bấm <b>Thả chốt lò xo</b> &rarr; Lò xo bung nhanh đập vào đuôi xe và đẩy xe lăn đi.</li>
+                            </ol>
+                            <div class="status-box" style="background: #f8fafc; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 13px; color: #334155;">
+                                <p>📌 Lò xo lá tròn: <span id="e1SpringState" style="color: #d97706; font-weight: bold;">Đang nén (Có dây chốt)</span></p>
+                                <p>🚗 Trạng thái xe A: <span id="e1CarState" style="color: #64748b; font-weight: bold;">Đứng yên</span></p>
+                            </div>
+                            <div class="conclusion-wrapper">
+                                <div class="conclusion-cover" onclick="revealConclusion(this)">
+                                    🔒 Bấm vào đây để tháo miếng che xem câu trả lời & kết luận!
+                                </div>
+                                <div class="conclusion-box">
+                                    <b>💡 Giải thích & Kết luận:</b><br>
+                                    - <b>Đặt ở A:</b> Lò xo bung hết cỡ chỉ chạm tới vạch B, không tiếp xúc với xe nên không truyền lực &rarr; xe đứng yên.<br>
+                                    - <b>Đặt ở B (hoặc trong khoảng OB):</b> Khi bung ra, lò xo tiếp xúc trực tiếp với xe và đẩy xe chuyển động. Đây là <b>lực tiếp xúc</b>.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thí nghiệm 1.2: Lực không tiếp xúc -->
+            <div id="forceExp2Section" class="hidden">
+                <div class="header">
+                    <div>
+                        <span class="badge">KHTN 6 &bull; Hình 40.5</span>
+                        <h1 style="margin: 8px 0 4px 0; font-size: 20px; color: #0f172a;">Thí Nghiệm 2: Tìm Hiểu Về Lực Không Tiếp Xúc</h1>
+                        <p style="color: #64748b; font-size: 13px; margin: 0;">Tự do kéo trực tiếp xe trên màn hình hoặc dùng thanh kéo bên dưới để tránh ngón tay che khuất.</p>
+                    </div>
+                    <button class="action-btn btn-reset" onclick="resetForceExp2()">🔄 Đặt lại vị trí</button>
+                </div>
+
+                <div class="main-grid">
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <span style="font-size: 13px; color: #64748b; font-weight: 600;">KÉO XE TRỰC TIẾP HOẶC DÙNG THANH TRƯỢT</span>
+                            <span style="font-size: 12px; color: #0284c7; font-weight: 600;">Hai cực cùng tên (N - N) đẩy nhau</span>
+                        </div>
+                        <canvas id="forceCanvas2" width="640" height="320" style="cursor: grab;"></canvas>
+                        <div class="slider-panel">
+                            <div class="slider-row">
+                                <label for="sliderCarB" style="color: #ef4444;">🟥 Kéo Xe B:</label>
+                                <input type="range" id="sliderCarB" min="70" max="570" value="200" oninput="onCarSliderMove('B', this.value)">
+                            </div>
+                            <div class="slider-row">
+                                <label for="sliderCarA" style="color: #3b82f6;">🟦 Kéo Xe A:</label>
+                                <input type="range" id="sliderCarA" min="70" max="570" value="430" oninput="onCarSliderMove('A', this.value)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <h3 style="margin-top: 0; font-size: 15px; color: #0f172a;">📋 Hướng dẫn tương tác</h3>
+                            <ol style="padding-left: 18px; font-size: 13px; color: #334155; line-height: 1.6; margin-bottom: 12px;">
+                                <li>Nhấn giữ và kéo <b>Xe B</b> (màu cam) tiến lại gần <b>Xe A</b> (màu xanh) — hoặc kéo thanh trượt bên dưới nếu dùng điện thoại.</li>
+                                <li>Quan sát khoảng cách giữa 2 xe: Xe A tự động lùi ra xa <b>trước khi hai xe chạm vào nhau</b>.</li>
+                            </ol>
+                            <div class="status-box" style="background: #f8fafc; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 13px; color: #334155;">
+                                <p>📏 Khoảng cách 2 xe: <span id="e2DistText" style="color: #0284c7; font-weight: bold;">150 px</span></p>
+                                <p>🧲 Lực từ tương tác: <span id="e2ForceState" style="color: #64748b; font-weight: bold;">Chưa đủ gần</span></p>
+                            </div>
+                            <div class="conclusion-wrapper">
+                                <div class="conclusion-cover" onclick="revealConclusion(this)">
+                                    🔒 Bấm vào đây để tháo miếng che xem câu trả lời & kết luận!
+                                </div>
+                                <div class="conclusion-box">
+                                    <b>💡 Giải thích & Kết luận:</b><br>
+                                    - Không cần đẩy xe B chạm vào xe A thì xe A mới chuyển động. Khi đưa lại gần, từ trường của hai nam châm cùng cực đã đẩy xe A chuyển động.<br>
+                                    - Lực xuất hiện khi hai vật <b>không tiếp xúc với nhau</b> gọi là <b>lực không tiếp xúc</b>.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================================================================== -->
+        <!-- PHẦN 2: KHẢO SÁT SỰ PHẢN XẠ ÂM (KHTN 7)                               -->
+        <!-- ===================================================================== -->
+        <div id="labSoundWrapper" class="hidden">
+            <div class="header">
+                <div>
+                    <span class="badge">KHTN 7 &bull; Sóng âm</span>
+                    <h1 style="margin: 8px 0 4px 0; font-size: 20px; color: #0f172a;">Phòng Thí Nghiệm: Khảo Sát Sự Phản Xạ Âm</h1>
+                    <p style="color: #64748b; font-size: 13px; margin: 0;">Quan sát đường truyền của các nhịp sóng âm khi gặp các bề mặt vật liệu khác nhau.</p>
+                </div>
+                <button class="action-btn btn-reset" onclick="resetSoundLab()">🔄 Đặt lại</button>
+            </div>
+
+            <div class="main-grid">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <span style="font-size: 13px; color: #64748b; font-weight: 600;">SƠ ĐỒ THÍ NGHIỆM PHẢN XẠ ÂM</span>
+                        <span id="activeMatName" style="font-size: 12px; color: #0284c7; font-weight: 600;">Đang gắn: Tấm gỗ nhẵn</span>
+                    </div>
+                    <canvas id="soundCanvas" width="640" height="380"></canvas>
+                    <div class="control-group">
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                            <span style="font-size: 13px; font-weight: 600; color: #334155;">Chọn vật liệu:</span>
+                            <button class="material-btn active" id="mat0" onclick="setSoundMaterial(0)">Tấm gỗ nhẵn</button>
+                            <button class="material-btn" id="mat1" onclick="setSoundMaterial(1)">Tấm gỗ sần sùi</button>
+                            <button class="material-btn" id="mat2" onclick="setSoundMaterial(2)">Tấm xốp mềm</button>
+                        </div>
+                        <button id="btnSoundPower" class="action-btn" onclick="toggleSoundSource()">🔊 Bật nguồn âm</button>
+                    </div>
+                </div>
+
+                <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h3 style="margin-top: 0; font-size: 15px; color: #0f172a;">📋 Hướng dẫn thực hiện</h3>
+                        <ol style="padding-left: 18px; font-size: 13px; color: #334155; line-height: 1.6; margin-bottom: 12px;">
+                            <li>Bấm <b>Bật nguồn âm</b> để đồng hồ phát ra các nhịp sóng âm hướng thẳng lên tấm phản xạ.</li>
+                            <li>Lần lượt đổi qua lại 3 loại vật liệu để thay thế tấm phản xạ trên giá đỡ.</li>
+                            <li>So sánh các vạch sóng phản xạ truyền tới <b>Bộ thu âm</b> và lắng nghe độ to của âm thanh.</li>
+                        </ol>
+                        <div class="status-box" style="background: #f8fafc; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 13px; color: #334155;">
+                            <p>🔊 Trạng thái nguồn: <span id="sStatus" style="color: #64748b; font-weight: bold;">Đang tắt</span></p>
+                            <p>📊 Cường độ âm thu được: <span id="sIntensity" style="color: #0284c7; font-weight: bold;">0 dB</span></p>
+                            <p>⭐ Đánh giá: <span id="sEval" style="color: #475569; font-weight: bold;">---</span></p>
+                        </div>
+                        <div class="conclusion-wrapper">
+                            <div class="conclusion-cover" onclick="revealConclusion(this)">
+                                🔒 Bấm vào đây để tháo miếng che xem nhận xét & kết luận!
+                            </div>
+                            <div class="conclusion-box">
+                                <b>💡 Nhận xét & Kết luận:</b><br>
+                                - <b>Phản xạ âm tốt:</b> Bề mặt cứng, phẳng và nhẵn phản chiếu sóng âm rõ nét, cường độ âm thu được lớn.<br>
+                                - <b>Phản xạ âm kém:</b> Bề mặt mềm, xốp hoặc gồ ghề, sần sùi làm tán xạ và hấp thụ mạnh sóng âm.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===================================================================== -->
+        <!-- PHẦN 3: CHUYỂN HÓA ĐỘNG NĂNG - THẾ NĂNG CON LẮC ĐƠN (KHTN 9)          -->
+        <!-- ===================================================================== -->
+        <div id="labEnergyWrapper" class="hidden">
+            <div class="header">
+                <div>
+                    <span class="badge" style="background: #dcfce7; color: #15803d;">KHTN 9 &bull; Hình 3.2</span>
+                    <h1 style="margin: 8px 0 4px 0; font-size: 20px; color: #0f172a;">Thí Nghiệm: Sự Chuyển Hóa Động Năng – Thế Năng</h1>
+                    <p style="color: #64748b; font-size: 13px; margin: 0;">Kéo vật nặng tới độ cao h (vị trí A) rồi thả nhẹ để quan sát dao động của con lắc đơn.</p>
+                </div>
+                <button class="action-btn btn-reset" onclick="resetPendulum()">🔄 Đặt lại</button>
+            </div>
+
+            <div class="main-grid">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+                        <span style="font-size: 13px; color: #64748b; font-weight: 600;">CON LẮC ĐƠN (KÉO TRỰC TIẾP QUẢ CẦU HOẶC DÙNG THANH TRƯỢT)</span>
+                        <span id="simStatus" style="font-size: 12px; color: #0284c7; font-weight: 700;">Đang giữ tại vị trí A</span>
+                    </div>
+                    <canvas id="pendulumCanvas" width="640" height="390" style="cursor: grab;"></canvas>
+                    <div class="slider-panel">
+                        <div class="slider-row">
+                            <label for="heightSlider" style="color: #334155; min-width: 125px;">Độ cao h (Vị trí A):</label>
+                            <input type="range" id="heightSlider" min="5" max="100" value="65" oninput="onPendulumSlider(this.value)">
+                            <span id="heightValText" style="font-size: 13px; font-weight: 700; color: #0284c7; min-width: 48px;">65 cm</span>
+                            <div style="display: flex; gap: 8px;">
+                                <button class="action-btn" style="background: #059669;" onclick="releaseBall()">▶ Thả nhẹ</button>
+                                <button class="action-btn" style="background: #64748b;" id="btnPause" onclick="togglePendulumPause()">⏸ Tạm dừng</button>
+                            </div>
+                        </div>
+                        <div class="slider-row" style="border-top: 1px dashed #cbd5e1; padding-top: 10px; justify-content: space-between;">
+                            <span style="font-size: 13px; font-weight: 600; color: #475569;">Môi trường thí nghiệm:</span>
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                <button class="btn-mode active" id="modeAir" onclick="setPendulumEnv('air')">🌬️ Có lực cản không khí (Thực tế)</button>
+                                <button class="btn-mode" id="modeVacuum" onclick="setPendulumEnv('vacuum')">🌌 Không có lực cản (Lí tưởng)</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h3 style="margin-top: 0; margin-bottom: 10px; font-size: 15px; color: #0f172a;">⚡ Biểu đồ chuyển hóa năng lượng</h3>
+                        <div class="energy-bars">
+                            <div class="bar-item">
+                                <div class="bar-label" style="color: #0284c7;">
+                                    <span>Thế năng (Wt):</span>
+                                    <span id="pePercent">100%</span>
+                                </div>
+                                <div class="bar-track"><div class="bar-fill" id="peBar" style="background: #0284c7; width: 100%;"></div></div>
+                            </div>
+                            <div class="bar-item">
+                                <div class="bar-label" style="color: #ea580c;">
+                                    <span>Động năng (Wđ):</span>
+                                    <span id="kePercent">0%</span>
+                                </div>
+                                <div class="bar-track"><div class="bar-fill" id="keBar" style="background: #ea580c; width: 0%;"></div></div>
+                            </div>
+                            <div class="bar-item">
+                                <div class="bar-label" style="color: #059669;">
+                                    <span>Cơ năng tổng (W):</span>
+                                    <span id="mePercent">100%</span>
+                                </div>
+                                <div class="bar-track"><div class="bar-fill" id="meBar" style="background: #059669; width: 100%;"></div></div>
+                            </div>
+                        </div>
+
+                        <h3 style="margin-top: 12px; margin-bottom: 6px; font-size: 14.5px; color: #0f172a;">📋 Tiến hành & Câu hỏi</h3>
+                        <ol style="padding-left: 18px; font-size: 12.5px; color: #334155; line-height: 1.55; margin: 0 0 10px 0;">
+                            <li>Kéo vật nặng đến vị trí A ở độ cao h rồi bấm <b>Thả nhẹ</b>.</li>
+                            <li>So sánh độ cao điểm B (bên phải) với độ cao điểm A.</li>
+                            <li>Quan sát độ cao vật nặng sau một thời gian dao động qua lại điểm O.</li>
+                        </ol>
+
+                        <div class="conclusion-wrapper">
+                            <div class="conclusion-cover" onclick="revealConclusion(this)">
+                                🔒 Bấm vào đây để tháo miếng che xem trả lời câu 1, 2 & kết luận!
+                            </div>
+                            <div class="conclusion-box">
+                                <b>💡 Trả lời & Kết luận:</b><br>
+                                <b>1. Sự chuyển hóa:</b> Từ A &rarr; O, độ cao giảm dần nên <b>thế năng chuyển hóa thành động năng</b> (tại O động năng lớn nhất). Từ O &rarr; B, tốc độ giảm nên <b>động năng chuyển hóa ngược lại thành thế năng</b>.<br>
+                                <b>2. Độ cao giảm dần:</b> Do có <b>lực cản của không khí</b> (và ma sát ở điểm treo), một phần cơ năng chuyển hóa thành nhiệt năng nên độ cao điểm B thấp hơn A và giảm dần cho đến khi dừng lại ở O.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =====================================================================
+        // HỆ THỐNG ÂM THANH CHUNG (WEB AUDIO API)
+        // =====================================================================
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type, param = 1) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'click') {
+                osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.08);
+            } else if (type === 'spring') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(380, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(140, audioCtx.currentTime + 0.18);
+                gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.18);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.18);
+            } else if (type === 'hit') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(60, audioCtx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.15);
+            } else if (type === 'repel') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(520, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(720, audioCtx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.15);
+            } else if (type === 'beep') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+                let vol = 0.015 + param * 0.16;
+                gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.12);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.12);
+            } else if (type === 'tick') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(520 + param * 200, audioCtx.currentTime);
+                gain.gain.setValueAtTime(Math.min(0.12, 0.02 + param * 0.1), audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.06);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.06);
+            }
+        }
+
+        // =====================================================================
+        // ĐIỀU HƯỚNG GIỮA 3 CHỦ ĐỀ THÍ NGHIỆM
+        // =====================================================================
+        let activeMainLab = 'force';
+
+        function switchMainLab(lab) {
+            playSound('click');
+            activeMainLab = lab;
+
+            // Tắt âm thanh nhịp đồng hồ nếu rời khỏi tab Phản xạ âm
+            if (lab !== 'sound' && soundOn) {
+                toggleSoundSource();
+            }
+
+            document.getElementById('labForceWrapper').classList.toggle('hidden', lab !== 'force');
+            document.getElementById('labSoundWrapper').classList.toggle('hidden', lab !== 'sound');
+            document.getElementById('labEnergyWrapper').classList.toggle('hidden', lab !== 'energy');
+
+            document.getElementById('navLabForce').classList.toggle('active', lab === 'force');
+            document.getElementById('navLabSound').classList.toggle('active', lab === 'sound');
+            document.getElementById('navLabEnergy').classList.toggle('active', lab === 'energy');
+        }
+
+        function switchForceSubLab(sub) {
+            playSound('click');
+            document.getElementById('forceExp1Section').classList.toggle('hidden', sub !== 'exp1');
+            document.getElementById('forceExp2Section').classList.toggle('hidden', sub !== 'exp2');
+            document.getElementById('tabForce1').classList.toggle('active', sub === 'exp1');
+            document.getElementById('tabForce2').classList.toggle('active', sub === 'exp2');
+        }
+
+        function revealConclusion(el) {
+            playSound('click');
+            el.classList.add('revealed');
+        }
+
+        // =====================================================================
+        // MODULE 1.1: LỰC TIẾP XÚC (LÒ XO LÁ TRÒN & XE LĂN)
+        // =====================================================================
+        const fCanvas1 = document.getElementById('forceCanvas1');
+        const fCtx1 = fCanvas1.getContext('2d');
+
+        const O_X = 90, B_X = 240, A_X = 340, CAR_HALF_W = 36;
+        let e1CarPos = 'A';
+        let e1SpringCompressed = true;
+        let e1SpringDiameter = 54;
+        let e1CarCenterX = A_X + CAR_HALF_W;
+        let e1CarVx = 0;
+        let e1IsReleasing = false;
+
+        function setCarPosition(pos) {
+            playSound('click');
+            e1CarPos = pos;
+            e1SpringCompressed = true;
+            e1SpringDiameter = 54;
+            e1CarVx = 0;
+            e1IsReleasing = false;
+
+            if (pos === 'A') {
+                e1CarCenterX = A_X + CAR_HALF_W;
+                document.getElementById('exp1PosText').innerText = "Đuôi xe đặt tại vạch A (Ngoài tầm lò xo)";
+            } else {
+                e1CarCenterX = B_X + CAR_HALF_W;
+                document.getElementById('exp1PosText').innerText = "Đuôi xe đặt tại vạch B (Đúng tầm bung lò xo)";
+            }
+            document.getElementById('e1SpringState').innerText = "Đang nén (Có dây chốt)";
+            document.getElementById('e1SpringState').style.color = "#d97706";
+            document.getElementById('e1CarState').innerText = "Đứng yên";
+            document.getElementById('e1CarState').style.color = "#64748b";
+        }
+
+        function releaseSpring() {
+            if (!e1SpringCompressed || e1IsReleasing) return;
+            playSound('spring');
+            e1IsReleasing = true;
+            e1SpringCompressed = false;
+
+            document.getElementById('e1SpringState').innerText = "Đã thả chốt (Bung tròn tới B)";
+            document.getElementById('e1SpringState').style.color = "#059669";
+
+            let startTime = performance.now();
+            let duration = 150;
+            let startDiam = 54;
+            let endDiam = B_X - O_X;
+            let hasCollided = false;
+
+            function animateSpring(now) {
+                let t = Math.min(1, (now - startTime) / duration);
+                let ease = 1 - Math.pow(1 - t, 2);
+                e1SpringDiameter = startDiam + (endDiam - startDiam) * ease;
+
+                let springRightEdge = O_X + e1SpringDiameter;
+                let carLeftEdge = e1CarCenterX - CAR_HALF_W;
+
+                if (!hasCollided && springRightEdge >= carLeftEdge - 1) {
+                    hasCollided = true;
+                    playSound('hit');
+                    e1CarVx = 8.5;
+                    document.getElementById('e1CarState').innerText = "Chuyển động do lực đẩy tiếp xúc của lò xo!";
+                    document.getElementById('e1CarState').style.color = "#059669";
+                }
+
+                if (t < 1) {
+                    requestAnimationFrame(animateSpring);
+                } else {
+                    e1SpringDiameter = endDiam;
+                    e1IsReleasing = false;
+                    if (!hasCollided) {
+                        document.getElementById('e1CarState').innerText = "Vẫn đứng yên (Lò xo tới B chưa chạm xe ở A)";
+                        document.getElementById('e1CarState').style.color = "#e11d48";
+                    }
+                }
+            }
+            requestAnimationFrame(animateSpring);
+        }
+
+        function resetForceExp1() { setCarPosition('A'); }
+
+        function drawForceExp1() {
+            fCtx1.clearRect(0, 0, fCanvas1.width, fCanvas1.height);
+            if (e1CarVx > 0.05) {
+                e1CarCenterX += e1CarVx;
+                e1CarVx *= 0.965;
+                if (e1CarCenterX > 570) { e1CarCenterX = 570; e1CarVx = 0; }
+            } else { e1CarVx = 0; }
+
+            const floorY = 250;
+            fCtx1.fillStyle = '#cbd5e1';
+            fCtx1.fillRect(30, floorY, 580, 10);
+
+            fCtx1.fillStyle = '#334155';
+            fCtx1.font = 'bold 13px sans-serif';
+            fCtx1.textAlign = 'center';
+            fCtx1.fillRect(O_X - 1.5, floorY - 6, 3, 16);
+            fCtx1.fillText("O", O_X, floorY + 26);
+
+            fCtx1.fillStyle = '#059669';
+            fCtx1.fillRect(B_X - 1.5, floorY - 6, 3, 16);
+            fCtx1.fillText("B", B_X, floorY + 26);
+
+            fCtx1.fillStyle = '#0284c7';
+            fCtx1.fillRect(A_X - 1.5, floorY - 6, 3, 16);
+            fCtx1.fillText("A", A_X, floorY + 26);
+
+            fCtx1.fillStyle = '#38bdf8';
+            fCtx1.strokeStyle = '#0284c7';
+            fCtx1.lineWidth = 2;
+            fCtx1.fillRect(O_X - 16, 100, 16, floorY - 100);
+            fCtx1.strokeRect(O_X - 16, 100, 16, floorY - 100);
+
+            let rx = e1SpringDiameter / 2;
+            let ry = 75 + (150 - e1SpringDiameter) * 0.22;
+            let springCenterX = O_X + rx;
+            let springCenterY = floorY - ry - 4;
+
+            fCtx1.save();
+            fCtx1.strokeStyle = '#e11d48';
+            fCtx1.lineWidth = 3;
+            fCtx1.beginPath();
+            fCtx1.ellipse(springCenterX, springCenterY, rx, ry, 0, 0, Math.PI * 2);
+            fCtx1.stroke();
+
+            fCtx1.fillStyle = '#475569';
+            fCtx1.beginPath();
+            fCtx1.arc(O_X, springCenterY, 5, 0, Math.PI * 2);
+            fCtx1.fill();
+
+            if (e1SpringCompressed) {
+                fCtx1.strokeStyle = '#475569';
+                fCtx1.lineWidth = 2;
+                fCtx1.beginPath();
+                fCtx1.moveTo(O_X - 16, springCenterY);
+                fCtx1.lineTo(O_X + e1SpringDiameter + 6, springCenterY);
+                fCtx1.stroke();
+
+                fCtx1.fillStyle = '#b91c1c';
+                fCtx1.beginPath();
+                fCtx1.moveTo(O_X + e1SpringDiameter + 6, springCenterY - 6);
+                fCtx1.lineTo(O_X + e1SpringDiameter + 6, springCenterY + 6);
+                fCtx1.lineTo(O_X + e1SpringDiameter - 3, springCenterY);
+                fCtx1.fill();
+            }
+            fCtx1.restore();
+
+            // Vẽ Xe A
+            fCtx1.save();
+            fCtx1.translate(e1CarCenterX, floorY - 15);
+            fCtx1.fillStyle = '#38bdf8';
+            fCtx1.strokeStyle = '#0369a1';
+            fCtx1.lineWidth = 2;
+            fCtx1.beginPath();
+            fCtx1.roundRect(-CAR_HALF_W, -42, CAR_HALF_W * 2, 46, 5);
+            fCtx1.fill(); fCtx1.stroke();
+            fCtx1.fillStyle = '#0f172a';
+            fCtx1.font = 'bold 16px sans-serif';
+            fCtx1.textAlign = 'center';
+            fCtx1.fillText("A", 0, -14);
+            fCtx1.fillStyle = '#334155';
+            fCtx1.beginPath(); fCtx1.arc(-20, 8, 8, 0, Math.PI * 2); fCtx1.fill();
+            fCtx1.beginPath(); fCtx1.arc(20, 8, 8, 0, Math.PI * 2); fCtx1.fill();
+            fCtx1.fillStyle = '#cbd5e1';
+            fCtx1.beginPath(); fCtx1.arc(-20, 8, 3, 0, Math.PI * 2); fCtx1.fill();
+            fCtx1.beginPath(); fCtx1.arc(20, 8, 3, 0, Math.PI * 2); fCtx1.fill();
+            fCtx1.restore();
+        }
+
+        // =====================================================================
+        // MODULE 1.2: LỰC KHÔNG TIẾP XÚC (HAI XE NAM CHÂM)
+        // =====================================================================
+        const fCanvas2 = document.getElementById('forceCanvas2');
+        const fCtx2 = fCanvas2.getContext('2d');
+
+        let carBX = 200, carAX = 430, carAVx = 0, carBVx = 0;
+        let draggingCar = null, dragOffsetX = 0, lastRepelSoundTime = 0;
+        const CAR2_HALF_W = 40, REPEL_RANGE = 155;
+
+        function onCarSliderMove(whichCar, val) {
+            let numVal = parseFloat(val);
+            if (whichCar === 'B') { carBX = numVal; carBVx = 0; }
+            else { carAX = numVal; carAVx = 0; }
+        }
+
+        function resetForceExp2() {
+            playSound('click');
+            carBX = 200; carAX = 430; carAVx = 0; carBVx = 0; draggingCar = null;
+            document.getElementById('sliderCarB').value = carBX;
+            document.getElementById('sliderCarA').value = carAX;
+        }
+
+        function getForceCanvas2X(evt) {
+            const rect = fCanvas2.getBoundingClientRect();
+            const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+            return (clientX - rect.left) * (fCanvas2.width / rect.width);
+        }
+
+        fCanvas2.addEventListener('pointerdown', (evt) => {
+            const mx = getForceCanvas2X(evt);
+            if (Math.abs(mx - carBX) < CAR2_HALF_W + 12) {
+                draggingCar = 'B'; dragOffsetX = mx - carBX; fCanvas2.style.cursor = 'grabbing';
+            } else if (Math.abs(mx - carAX) < CAR2_HALF_W + 12) {
+                draggingCar = 'A'; dragOffsetX = mx - carAX; fCanvas2.style.cursor = 'grabbing';
+            }
+        });
+
+        window.addEventListener('pointermove', (evt) => {
+            if (!draggingCar) return;
+            const mx = getForceCanvas2X(evt);
+            let newX = Math.max(70, Math.min(570, mx - dragOffsetX));
+            if (draggingCar === 'B') { carBX = newX; carBVx = 0; }
+            else { carAX = newX; carAVx = 0; }
+        });
+
+        window.addEventListener('pointerup', () => {
+            if (draggingCar) { draggingCar = null; fCanvas2.style.cursor = 'grab'; }
+        });
+
+        function drawForceExp2() {
+            let dist = carAX - carBX;
+            if (dist < REPEL_RANGE) {
+                let overlap = REPEL_RANGE - dist;
+                let pushForce = Math.min(4.5, (overlap / REPEL_RANGE) * 4.2);
+                if (draggingCar === 'B') carAVx += pushForce * 0.45;
+                else if (draggingCar === 'A') carBVx -= pushForce * 0.45;
+                else { carAVx += pushForce * 0.3; carBVx -= pushForce * 0.3; }
+
+                if (performance.now() - lastRepelSoundTime > 260 && pushForce > 0.6) {
+                    playSound('repel'); lastRepelSoundTime = performance.now();
+                }
+                document.getElementById('e2ForceState').innerText = "Đang đẩy nhau (Không cần tiếp xúc!)";
+                document.getElementById('e2ForceState').style.color = "#e11d48";
+            } else {
+                document.getElementById('e2ForceState').innerText = "Chưa đủ gần";
+                document.getElementById('e2ForceState').style.color = "#64748b";
+            }
+
+            if (draggingCar !== 'A') { carAX += carAVx; carAVx *= 0.88; if (Math.abs(carAVx) < 0.05) carAVx = 0; }
+            if (draggingCar !== 'B') { carBX += carBVx; carBVx *= 0.88; if (Math.abs(carBVx) < 0.05) carBVx = 0; }
+
+            carBX = Math.max(70, Math.min(570, carBX));
+            carAX = Math.max(70, Math.min(570, carAX));
+            if (carAX - carBX < CAR2_HALF_W * 2 + 8) {
+                if (draggingCar === 'B') carAX = Math.min(570, carBX + CAR2_HALF_W * 2 + 8);
+                else carBX = Math.max(70, carAX - (CAR2_HALF_W * 2 + 8));
+            }
+
+            document.getElementById('sliderCarB').value = Math.round(carBX);
+            document.getElementById('sliderCarA').value = Math.round(carAX);
+            let gapPx = Math.max(0, Math.round((carAX - carBX) - CAR2_HALF_W * 2));
+            document.getElementById('e2DistText').innerText = gapPx + " px (Mép 2 xe)";
+
+            fCtx2.clearRect(0, 0, fCanvas2.width, fCanvas2.height);
+            const floorY = 235;
+            fCtx2.fillStyle = '#cbd5e1';
+            fCtx2.fillRect(30, floorY, 580, 10);
+
+            dist = carAX - carBX;
+            if (dist < REPEL_RANGE + 15) {
+                let midX = (carBX + carAX) / 2;
+                let intensity = Math.min(1, (REPEL_RANGE + 15 - dist) / 70);
+                fCtx2.save();
+                fCtx2.strokeStyle = `rgba(225, 29, 72, ${0.25 + intensity * 0.65})`;
+                fCtx2.lineWidth = 2;
+                fCtx2.setLineDash([4, 4]);
+                for (let offset of [-14, 0, 14]) {
+                    fCtx2.beginPath();
+                    fCtx2.moveTo(carBX + CAR2_HALF_W, floorY - 52 + offset * 0.4);
+                    fCtx2.quadraticCurveTo(midX - 6, floorY - 52 + offset * 1.8, midX - 6, floorY - 52 + offset * 2.5);
+                    fCtx2.stroke();
+
+                    fCtx2.beginPath();
+                    fCtx2.moveTo(carAX - CAR2_HALF_W, floorY - 52 + offset * 0.4);
+                    fCtx2.quadraticCurveTo(midX + 6, floorY - 52 + offset * 1.8, midX + 6, floorY - 52 + offset * 2.5);
+                    fCtx2.stroke();
+                }
+                if (intensity > 0.25) {
+                    fCtx2.setLineDash([]);
+                    fCtx2.fillStyle = '#e11d48';
+                    fCtx2.font = 'bold 12px sans-serif';
+                    fCtx2.textAlign = 'center';
+                    fCtx2.fillText("⬅ Lực từ đẩy nhau ➡", midX, floorY - 95);
+                }
+                fCtx2.restore();
+            }
+
+            drawMagnetCar(fCtx2, carBX, floorY - 15, "B", '#fb923c', '#ea580c', 'S', '#2563eb', 'N', '#e11d48');
+            drawMagnetCar(fCtx2, carAX, floorY - 15, "A", '#38bdf8', '#0284c7', 'N', '#e11d48', 'S', '#2563eb');
+        }
+
+        function drawMagnetCar(ctx, cx, cy, label, bodyColor, strokeColor, leftPole, leftColor, rightPole, rightColor) {
+            ctx.save(); ctx.translate(cx, cy);
+            ctx.fillStyle = bodyColor; ctx.strokeStyle = strokeColor; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.roundRect(-CAR2_HALF_W, -32, CAR2_HALF_W * 2, 36, 6); ctx.fill(); ctx.stroke();
+            ctx.fillStyle = '#ffffff'; ctx.font = 'bold 15px sans-serif'; ctx.textAlign = 'center'; ctx.fillText(label, 0, -9);
+            ctx.fillStyle = leftColor; ctx.fillRect(-CAR2_HALF_W, -52, CAR2_HALF_W, 20);
+            ctx.fillStyle = rightColor; ctx.fillRect(0, -52, CAR2_HALF_W, 20);
+            ctx.strokeStyle = '#1e293b'; ctx.lineWidth = 1.5; ctx.strokeRect(-CAR2_HALF_W, -52, CAR2_HALF_W * 2, 20);
+            ctx.fillStyle = '#ffffff'; ctx.font = 'bold 12px sans-serif';
+            ctx.fillText(leftPole, -CAR2_HALF_W / 2, -38); ctx.fillText(rightPole, CAR2_HALF_W / 2, -38);
+            ctx.fillStyle = '#334155';
+            ctx.beginPath(); ctx.arc(-22, 8, 8, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(22, 8, 8, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#cbd5e1';
+            ctx.beginPath(); ctx.arc(-22, 8, 3, 0, Math.PI * 2); ctx.fill();
+            ctx.beginPath(); ctx.arc(22, 8, 3, 0, Math.PI * 2); ctx.fill();
+            ctx.restore();
+        }
+
+        // =====================================================================
+        // MODULE 2: PHẢN XẠ ÂM (KHTN 7)
+        // =====================================================================
+        const sCanvas = document.getElementById('soundCanvas');
+        const sCtx = sCanvas.getContext('2d');
+        let beepInterval = null;
+        let currentMaterial = 0;
+        let soundMaterials = [
+            { name: "Tấm gỗ nhẵn", reflection: 0.95, eval: "Phản xạ rất tốt", color: "#d97706" },
+            { name: "Tấm gỗ sần sùi", reflection: 0.45, eval: "Phản xạ trung bình (Tán xạ)", color: "#92400e" },
+            { name: "Tấm xốp mềm", reflection: 0.12, eval: "Phản xạ kém (Hấp thụ âm)", color: "#94a3b8" }
+        ];
+        let soundOn = false, wavePulses = [], spawnTimer = 0;
+
+        function setSoundMaterial(idx) {
+            currentMaterial = idx;
+            for (let i = 0; i < 3; i++) document.getElementById('mat' + i).classList.toggle('active', i === idx);
+            document.getElementById('activeMatName').innerText = "Đang gắn: " + soundMaterials[idx].name;
+            updateSoundStatusText();
+        }
+
+        function toggleSoundSource() {
+            soundOn = !soundOn;
+            const btn = document.getElementById('btnSoundPower');
+            if (soundOn) {
+                btn.innerText = "🔇 Tắt nguồn âm"; btn.className = "action-btn btn-active";
+                spawnTimer = 20;
+                if (beepInterval) clearInterval(beepInterval);
+                playSound('beep', soundMaterials[currentMaterial].reflection);
+                beepInterval = setInterval(() => {
+                    if (soundOn) playSound('beep', soundMaterials[currentMaterial].reflection);
+                }, 350);
+            } else {
+                btn.innerText = "🔊 Bật nguồn âm"; btn.className = "action-btn";
+                if (beepInterval) { clearInterval(beepInterval); beepInterval = null; }
+            }
+            updateSoundStatusText();
+        }
+
+        function updateSoundStatusText() {
+            if (!soundOn) {
+                document.getElementById('sStatus').innerText = "Đang tắt";
+                document.getElementById('sIntensity').innerText = "0 dB";
+                document.getElementById('sEval').innerText = "---";
+            } else {
+                document.getElementById('sStatus').innerText = "Đang phát nhịp sóng âm";
+                let db = Math.round(28 + soundMaterials[currentMaterial].reflection * 57);
+                document.getElementById('sIntensity').innerText = db + " dB";
+                document.getElementById('sEval').innerText = soundMaterials[currentMaterial].eval;
+            }
+        }
+
+        function resetSoundLab() {
+            if (soundOn) toggleSoundSource();
+            setSoundMaterial(0);
+            wavePulses = [];
+        }
+
+        function drawSoundArcLine(x, y, angle, size, alpha, color, isScattered) {
+            sCtx.save(); sCtx.translate(x, y); sCtx.rotate(angle);
+            sCtx.strokeStyle = color; sCtx.globalAlpha = Math.max(0, alpha);
+            sCtx.lineWidth = 2.8; sCtx.lineCap = 'round';
+            if (!isScattered) {
+                sCtx.beginPath(); sCtx.arc(-size * 0.45, 0, size, -0.65, 0.65); sCtx.stroke();
+            } else {
+                sCtx.beginPath(); sCtx.arc(-size * 0.45, -4, size * 0.85, -0.55, -0.05); sCtx.stroke();
+                sCtx.beginPath(); sCtx.arc(-size * 0.45, 4, size * 0.85, 0.05, 0.55); sCtx.stroke();
+            }
+            sCtx.restore();
+        }
+
+        function drawSoundLab() {
+            sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
+            const boxX = 165, boxY = 235, sourceCenterX = boxX + 45, sourceTopY = boxY + 5;
+            const plateCenterX = 210, plateCenterY = 125, plateAngle = -0.68;
+            const micX = 525, micY = 125;
+
+            sCtx.fillStyle = '#475569';
+            sCtx.fillRect(95, 75, 10, 245); sCtx.fillRect(65, 312, 70, 12);
+            sCtx.fillStyle = '#64748b'; sCtx.fillRect(95, 121, 65, 8);
+            sCtx.beginPath(); sCtx.arc(100, 125, 8, 0, Math.PI * 2); sCtx.fillStyle = '#e11d48'; sCtx.fill();
+
+            sCtx.save(); sCtx.translate(plateCenterX, plateCenterY); sCtx.rotate(plateAngle);
+            sCtx.fillStyle = soundMaterials[currentMaterial].color; sCtx.strokeStyle = '#334155'; sCtx.lineWidth = 2;
+            sCtx.beginPath(); sCtx.roundRect(-75, -9, 150, 18, 4); sCtx.fill(); sCtx.stroke();
+            if (currentMaterial === 0) {
+                sCtx.strokeStyle = 'rgba(255,255,255,0.4)'; sCtx.lineWidth = 1.5;
+                sCtx.beginPath(); sCtx.moveTo(-60, -2); sCtx.lineTo(60, -2); sCtx.moveTo(-50, 3); sCtx.lineTo(50, 3); sCtx.stroke();
+            } else if (currentMaterial === 1) {
+                sCtx.fillStyle = '#451a03';
+                for (let k = -66; k < 66; k += 10) { sCtx.beginPath(); sCtx.moveTo(k, 9); sCtx.lineTo(k + 5, 14); sCtx.lineTo(k + 10, 9); sCtx.fill(); }
+            } else {
+                sCtx.fillStyle = '#f1f5f9';
+                for (let k = -65; k < 65; k += 11) { sCtx.beginPath(); sCtx.arc(k, 0, 2.5, 0, Math.PI * 2); sCtx.fill(); }
+            }
+            sCtx.restore();
+
+            sCtx.fillStyle = '#64748b'; sCtx.beginPath(); sCtx.roundRect(boxX, boxY, 90, 82, 6); sCtx.fill();
+            sCtx.strokeStyle = '#334155'; sCtx.lineWidth = 2; sCtx.stroke();
+            sCtx.fillStyle = '#1e293b'; sCtx.fillRect(boxX + 12, boxY + 4, 66, 66);
+
+            const clockX = sourceCenterX, clockY = boxY + 42;
+            sCtx.beginPath(); sCtx.arc(clockX, clockY, 17, 0, Math.PI * 2); sCtx.fillStyle = '#ffffff'; sCtx.fill();
+            sCtx.strokeStyle = '#e11d48'; sCtx.lineWidth = 2.5; sCtx.stroke();
+            sCtx.strokeStyle = '#0f172a'; sCtx.lineWidth = 1.5;
+            sCtx.beginPath(); sCtx.moveTo(clockX, clockY); sCtx.lineTo(clockX, clockY - 9); sCtx.moveTo(clockX, clockY); sCtx.lineTo(clockX + 7, clockY); sCtx.stroke();
+            sCtx.fillStyle = '#cbd5e1';
+            sCtx.beginPath(); sCtx.arc(clockX - 11, clockY - 15, 4.5, 0, Math.PI * 2); sCtx.fill();
+            sCtx.beginPath(); sCtx.arc(clockX + 11, clockY - 15, 4.5, 0, Math.PI * 2); sCtx.fill();
+
+            sCtx.fillStyle = '#334155'; sCtx.font = 'bold 11px sans-serif'; sCtx.textAlign = 'center';
+            sCtx.fillText("Hộp cách âm & Nguồn âm", sourceCenterX, boxY + 98);
+
+            sCtx.fillStyle = '#94a3b8'; sCtx.fillRect(310, 305, 85, 14);
+            sCtx.fillStyle = '#475569'; sCtx.font = '10px sans-serif'; sCtx.fillText("Tấm xốp", 352, 332);
+            sCtx.fillStyle = '#92400e'; sCtx.fillRect(420, 305, 95, 14); sCtx.fillText("Tấm gỗ sần sùi", 467, 332);
+
+            sCtx.fillStyle = '#475569'; sCtx.fillRect(micX - 16, micY + 55, 32, 8); sCtx.fillRect(micX - 4, micY + 18, 8, 40);
+            sCtx.beginPath(); sCtx.arc(micX, micY, 20, 0, Math.PI * 2); sCtx.fillStyle = '#2563eb'; sCtx.fill();
+            sCtx.strokeStyle = '#1e293b'; sCtx.lineWidth = 2; sCtx.stroke();
+            sCtx.beginPath(); sCtx.arc(micX - 4, micY, 10, Math.PI * 0.6, Math.PI * 1.4); sCtx.strokeStyle = '#ffffff'; sCtx.lineWidth = 2.5; sCtx.stroke();
+            sCtx.fillStyle = '#334155'; sCtx.font = 'bold 11px sans-serif'; sCtx.fillText("Bộ thu âm", micX, micY + 78);
+
+            if (soundOn) {
+                spawnTimer++;
+                if (spawnTimer >= 20) {
+                    spawnTimer = 0;
+                    wavePulses.push({ x: sourceCenterX, y: sourceTopY, stage: 1, vx: 0, vy: -2.6, angle: -Math.PI / 2, size: 24, alpha: 0.95, scattered: false });
+                }
+            }
+
+            for (let i = wavePulses.length - 1; i >= 0; i--) {
+                let p = wavePulses[i];
+                if (p.stage === 1) {
+                    p.y += p.vy;
+                    if (p.y <= plateCenterY + 10) {
+                        p.stage = 2; p.y = plateCenterY + 6; p.x = plateCenterX + 8;
+                        let baseAngle = Math.atan2(micY - p.y, micX - 24 - p.x);
+                        if (currentMaterial === 0) {
+                            p.angle = baseAngle; p.vx = Math.cos(p.angle) * 2.8; p.vy = Math.sin(p.angle) * 2.8; p.size = 26; p.alpha = 0.95; p.scattered = false;
+                        } else if (currentMaterial === 1) {
+                            p.angle = baseAngle + (Math.random() - 0.5) * 0.45; p.vx = Math.cos(p.angle) * 2.4; p.vy = Math.sin(p.angle) * 2.4; p.size = 22; p.alpha = 0.6; p.scattered = true;
+                        } else {
+                            p.angle = baseAngle + (Math.random() - 0.5) * 0.28; p.vx = Math.cos(p.angle) * 1.7; p.vy = Math.sin(p.angle) * 1.7; p.size = 16; p.alpha = 0.35; p.scattered = false;
+                        }
+                    }
+                    drawSoundArcLine(p.x, p.y, p.angle, p.size, p.alpha, '#0284c7', false);
+                } else {
+                    p.x += p.vx; p.y += p.vy;
+                    p.alpha -= (currentMaterial === 0 ? 0.002 : (currentMaterial === 1 ? 0.0045 : 0.01));
+                    let waveColor = currentMaterial === 0 ? '#2563eb' : (currentMaterial === 1 ? '#d97706' : '#64748b');
+                    drawSoundArcLine(p.x, p.y, p.angle, p.size, p.alpha, waveColor, p.scattered);
+                    if (p.x >= micX - 22 || p.alpha <= 0.02) wavePulses.splice(i, 1);
+                }
+            }
+        }
+
+        // =====================================================================
+        // MODULE 3: ĐỘNG NĂNG & THẾ NĂNG CON LẮC ĐƠN (KHTN 9)
+        // =====================================================================
+        const pCanvas = document.getElementById('pendulumCanvas');
+        const pCtx = pCanvas.getContext('2d');
+
+        const PIVOT_X = 320, PIVOT_Y = 48, ROPE_LEN = 255, BALL_R = 18;
+        const GRAVITY = 9.81, MAX_ANGLE = 0.85;
+
+        let theta = -0.68, omega = 0, startThetaA = -0.68, peakAngleB = 0.68;
+        let isHolding = true, isDraggingBall = false, isPaused = false, hasAirDrag = true, prevSign = -1;
+
+        function setPendulumEnv(env) {
+            hasAirDrag = (env === 'air');
+            document.getElementById('modeAir').classList.toggle('active', hasAirDrag);
+            document.getElementById('modeVacuum').classList.toggle('active', !hasAirDrag);
+            if (!isHolding) peakAngleB = hasAirDrag ? Math.abs(theta) * 0.94 : Math.abs(theta);
+        }
+
+        function onPendulumSlider(val) {
+            let ratio = parseFloat(val) / 100;
+            theta = -ratio * MAX_ANGLE;
+            isHolding = true; isPaused = false; omega = 0;
+            document.getElementById('btnPause').innerText = "⏸ Tạm dừng";
+            startThetaA = theta;
+            peakAngleB = hasAirDrag ? Math.abs(startThetaA) * 0.94 : Math.abs(startThetaA);
+            document.getElementById('heightValText').innerText = Math.round(val) + " cm";
+            document.getElementById('simStatus').innerText = "Đang giữ tại vị trí A (Sẵn sàng thả)";
+            document.getElementById('simStatus').style.color = "#0284c7";
+        }
+
+        function releaseBall() {
+            if (isHolding) {
+                isHolding = false; omega = 0; startThetaA = theta;
+                peakAngleB = hasAirDrag ? Math.abs(startThetaA) * 0.94 : Math.abs(startThetaA);
+                prevSign = Math.sign(theta);
+                document.getElementById('simStatus').innerText = "Đang dao động qua lại vị trí O";
+                document.getElementById('simStatus').style.color = "#059669";
+            }
+            isPaused = false;
+            document.getElementById('btnPause').innerText = "⏸ Tạm dừng";
+        }
+
+        function togglePendulumPause() {
+            if (isHolding) return;
+            isPaused = !isPaused;
+            document.getElementById('btnPause').innerText = isPaused ? "▶ Tiếp tục" : "⏸ Tạm dừng";
+        }
+
+        function resetPendulum() {
+            document.getElementById('heightSlider').value = 65;
+            onPendulumSlider(65);
+        }
+
+        function getPendulumPointerPos(evt) {
+            const rect = pCanvas.getBoundingClientRect();
+            const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+            const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+            return {
+                x: (clientX - rect.left) * (pCanvas.width / rect.width),
+                y: (clientY - rect.top) * (pCanvas.height / rect.height)
+            };
+        }
+
+        pCanvas.addEventListener('pointerdown', (evt) => {
+            const pos = getPendulumPointerPos(evt);
+            const ballX = PIVOT_X + ROPE_LEN * Math.sin(theta);
+            const ballY = PIVOT_Y + ROPE_LEN * Math.cos(theta);
+            if (Math.hypot(pos.x - ballX, pos.y - ballY) < 48) {
+                isDraggingBall = true; isHolding = true; isPaused = false; omega = 0;
+            }
+        });
+
+        window.addEventListener('pointermove', (evt) => {
+            if (!isDraggingBall) return;
+            const pos = getPendulumPointerPos(evt);
+            let dx = pos.x - PIVOT_X;
+            let dy = Math.max(20, pos.y - PIVOT_Y);
+            let angle = Math.max(-MAX_ANGLE, Math.min(MAX_ANGLE, Math.atan2(dx, dy)));
+            theta = angle; startThetaA = theta;
+            peakAngleB = hasAirDrag ? Math.abs(startThetaA) * 0.94 : Math.abs(startThetaA);
+
+            let cm = Math.max(5, Math.round((Math.abs(theta) / MAX_ANGLE) * 100));
+            document.getElementById('heightSlider').value = cm;
+            document.getElementById('heightValText').innerText = cm + " cm";
+            document.getElementById('simStatus').innerText = "Đang kéo vật nặng (Thả tay ra để chạy)";
+            document.getElementById('simStatus').style.color = "#d97706";
+        });
+
+        window.addEventListener('pointerup', () => {
+            if (isDraggingBall) { isDraggingBall = false; releaseBall(); }
+        });
+
+        function updatePendulumPhysics(dt) {
+            if (isHolding || isDraggingBall || isPaused) return;
+            const steps = 8, subDt = dt / steps, effectiveLen = 1.1;
+            const damping = hasAirDrag ? 0.14 : 0.0;
+
+            for (let i = 0; i < steps; i++) {
+                let alpha = -(GRAVITY / effectiveLen) * Math.sin(theta) - damping * omega;
+                omega += alpha * subDt;
+                theta += omega * subDt;
+            }
+
+            let currentSign = Math.sign(theta);
+            if (prevSign !== 0 && currentSign !== 0 && currentSign !== prevSign) {
+                let speedRatio = Math.abs(omega) / 3.0;
+                if (speedRatio > 0.08) playSound('tick', speedRatio);
+                if (theta > 0 && hasAirDrag) {
+                    peakAngleB = Math.abs(theta) + (omega * omega * effectiveLen) / (2 * GRAVITY);
+                }
+            }
+            prevSign = currentSign;
+
+            if (hasAirDrag && Math.abs(theta) < 0.004 && Math.abs(omega) < 0.004) {
+                theta = 0; omega = 0;
+                document.getElementById('simStatus').innerText = "Đã dừng hẳn tại vị trí cân bằng O";
+                document.getElementById('simStatus').style.color = "#64748b";
+            }
+        }
+
+        function updateEnergyBars() {
+            const effectiveLen = 1.1;
+            let hMax = Math.max(0.0001, effectiveLen * (1 - Math.cos(startThetaA)));
+            let hCurrent = effectiveLen * (1 - Math.cos(theta));
+            let pe = Math.max(0, GRAVITY * hCurrent);
+            let ke = Math.max(0, 0.5 * Math.pow(effectiveLen * omega, 2));
+            let eMax = GRAVITY * hMax;
+
+            let pePct = Math.min(100, Math.round((pe / eMax) * 100));
+            let kePct = Math.min(100, Math.round((ke / eMax) * 100));
+            let mePct = Math.min(100, pePct + kePct);
+
+            if (!hasAirDrag && !isHolding) {
+                mePct = 100; kePct = Math.max(0, 100 - pePct);
+            }
+
+            document.getElementById('pePercent').innerText = pePct + "%";
+            document.getElementById('peBar').style.width = pePct + "%";
+            document.getElementById('kePercent').innerText = kePct + "%";
+            document.getElementById('keBar').style.width = kePct + "%";
+            document.getElementById('mePercent').innerText = mePct + "%";
+            document.getElementById('meBar').style.width = mePct + "%";
+        }
+
+        function drawPendulumBall(x, y, alpha, label, lx, ly) {
+            pCtx.save(); pCtx.globalAlpha = alpha;
+            let grad = pCtx.createRadialGradient(x - 6, y - 6, 3, x, y, BALL_R);
+            grad.addColorStop(0, '#a7f3d0'); grad.addColorStop(0.45, '#10b981'); grad.addColorStop(1, '#065f46');
+            pCtx.beginPath(); pCtx.arc(x, y, BALL_R, 0, Math.PI * 2);
+            pCtx.fillStyle = grad; pCtx.fill();
+            pCtx.strokeStyle = '#064e3b'; pCtx.lineWidth = 1.5; pCtx.stroke();
+
+            if (label) {
+                pCtx.globalAlpha = 1; pCtx.fillStyle = '#0f172a';
+                pCtx.font = 'bold 14px sans-serif'; pCtx.textAlign = 'center';
+                pCtx.fillText(label, x + lx, y + ly);
+            }
+            pCtx.restore();
+        }
+
+        function drawPendulumLab(dt) {
+            updatePendulumPhysics(dt);
+            updateEnergyBars();
+            pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+
+            const lowestY = PIVOT_Y + ROPE_LEN;
+            let barGrad = pCtx.createLinearGradient(0, PIVOT_Y - 12, 0, PIVOT_Y);
+            barGrad.addColorStop(0, '#0284c7'); barGrad.addColorStop(1, '#7dd3fc');
+            pCtx.fillStyle = barGrad; pCtx.fillRect(PIVOT_X - 55, PIVOT_Y - 12, 110, 12);
+            pCtx.strokeStyle = '#0369a1'; pCtx.lineWidth = 1.5; pCtx.strokeRect(PIVOT_X - 55, PIVOT_Y - 12, 110, 12);
+
+            pCtx.save();
+            pCtx.setLineDash([5, 5]); pCtx.strokeStyle = '#64748b'; pCtx.lineWidth = 1.5;
+            pCtx.beginPath(); pCtx.moveTo(PIVOT_X, PIVOT_Y); pCtx.lineTo(PIVOT_X, lowestY + 15); pCtx.stroke();
+
+            let leftBound = -Math.abs(startThetaA);
+            let rightBound = Math.max(0.15, peakAngleB);
+            pCtx.strokeStyle = '#475569'; pCtx.lineWidth = 1.8;
+            pCtx.beginPath(); pCtx.arc(PIVOT_X, PIVOT_Y, ROPE_LEN, Math.PI / 2 - rightBound, Math.PI / 2 - leftBound); pCtx.stroke();
+
+            let bx = PIVOT_X + ROPE_LEN * Math.sin(rightBound);
+            let by = PIVOT_Y + ROPE_LEN * Math.cos(rightBound);
+            pCtx.beginPath(); pCtx.moveTo(PIVOT_X, PIVOT_Y); pCtx.lineTo(bx, by); pCtx.stroke();
+
+            let ax = PIVOT_X + ROPE_LEN * Math.sin(leftBound);
+            let ay = PIVOT_Y + ROPE_LEN * Math.cos(leftBound);
+            pCtx.strokeStyle = '#94a3b8';
+            pCtx.beginPath();
+            pCtx.moveTo(ax - 35, ay); pCtx.lineTo(PIVOT_X, ay);
+            pCtx.moveTo(ax - 35, lowestY); pCtx.lineTo(PIVOT_X + 25, lowestY);
+            pCtx.stroke();
+            pCtx.restore();
+
+            if (lowestY - ay > 14) {
+                let hx = ax - 26;
+                pCtx.strokeStyle = '#334155'; pCtx.lineWidth = 1.5;
+                pCtx.beginPath(); pCtx.moveTo(hx, ay + 2); pCtx.lineTo(hx, lowestY - 2); pCtx.stroke();
+                pCtx.fillStyle = '#0f172a'; pCtx.font = 'italic bold 14px serif'; pCtx.textAlign = 'right';
+                pCtx.fillText("h", hx - 6, (ay + lowestY) / 2 + 5);
+            }
+
+            drawPendulumBall(PIVOT_X, lowestY, 0.35, "O", 18, -16);
+            drawPendulumBall(bx, by, 0.35, "B", 16, -18);
+
+            let curX = PIVOT_X + ROPE_LEN * Math.sin(theta);
+            let curY = PIVOT_Y + ROPE_LEN * Math.cos(theta);
+            pCtx.strokeStyle = '#1e293b'; pCtx.lineWidth = 2.2;
+            pCtx.beginPath(); pCtx.moveTo(PIVOT_X, PIVOT_Y); pCtx.lineTo(curX, curY); pCtx.stroke();
+
+            pCtx.fillStyle = '#0f172a'; pCtx.font = 'bold 14px sans-serif'; pCtx.textAlign = 'center';
+            pCtx.fillText("A", ax - 16, ay - 18);
+
+            drawPendulumBall(curX, curY, 1.0, "", 0, 0);
+
+            if (!isHolding && Math.abs(omega) > 0.08) {
+                let dir = Math.sign(omega);
+                let tangentAngle = -theta + (dir > 0 ? 0 : Math.PI);
+                let arrowLen = Math.min(65, 22 + Math.abs(omega) * 18);
+                let sx = curX + Math.cos(tangentAngle) * (BALL_R + 2);
+                let sy = curY + Math.sin(tangentAngle) * (BALL_R + 2);
+                let ex = sx + Math.cos(tangentAngle) * arrowLen;
+                let ey = sy + Math.sin(tangentAngle) * arrowLen;
+
+                pCtx.save();
+                pCtx.strokeStyle = '#dc2626'; pCtx.fillStyle = '#dc2626'; pCtx.lineWidth = 2.6;
+                pCtx.beginPath(); pCtx.moveTo(sx, sy); pCtx.lineTo(ex, ey); pCtx.stroke();
+                pCtx.beginPath(); pCtx.moveTo(ex, ey);
+                pCtx.lineTo(ex - 9 * Math.cos(tangentAngle - Math.PI / 6), ey - 9 * Math.sin(tangentAngle - Math.PI / 6));
+                pCtx.lineTo(ex - 9 * Math.cos(tangentAngle + Math.PI / 6), ey - 9 * Math.sin(tangentAngle + Math.PI / 6));
+                pCtx.closePath(); pCtx.fill();
+                pCtx.font = 'bold 12px sans-serif'; pCtx.textAlign = dir > 0 ? 'left' : 'right';
+                pCtx.fillText("Hướng chuyển động", ex + (dir > 0 ? 6 : -6), ey + 4);
+                pCtx.restore();
+            }
+        }
+
+        // =====================================================================
+        // VÒNG LẶP RENDER CHÍNH (TỐI ƯU HIỆU NĂNG THEO TAB ĐANG MỞ)
+        // =====================================================================
+        onPendulumSlider(65);
+        let lastTime = performance.now();
+
+        function masterLoop(now) {
+            let dt = Math.min(0.05, (now - lastTime) / 1000);
+            lastTime = now;
+
+            if (activeMainLab === 'force') {
+                drawForceExp1();
+                drawForceExp2();
+            } else if (activeMainLab === 'sound') {
+                drawSoundLab();
+            } else if (activeMainLab === 'energy') {
+                drawPendulumLab(dt);
+            }
+
+            requestAnimationFrame(masterLoop);
+        }
+
+        requestAnimationFrame(masterLoop);
+    </script>
+</body>
+</html>

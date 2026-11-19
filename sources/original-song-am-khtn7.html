@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Lab - Phòng Thí Nghiệm Âm Thanh KHTN 7</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            user-select: none;
+        }
+        .container {
+            width: 100%;
+            max-width: 1000px;
+        }
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            background: #ffffff;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 13.5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .tab-btn:hover { background: #f1f5f9; }
+        .tab-btn.active {
+            background: #4f46e5;
+            color: #ffffff;
+            border-color: #4f46e5;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+        }
+        .header {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            padding: 18px 24px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+        }
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2.2fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 850px) {
+            .main-grid { grid-template-columns: 1fr; }
+        }
+        .card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(15, 23, 42, 0.05);
+        }
+        canvas {
+            background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 100%);
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            width: 100%;
+            height: auto;
+            display: block;
+            cursor: pointer;
+        }
+        button.action-btn {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 9px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.15s ease;
+        }
+        button.action-btn:hover { background: #4338ca; transform: translateY(-1px); }
+        .badge {
+            background: #e0f2fe;
+            color: #0284c7;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .hidden { display: none !important; }
+        .status-box p { margin: 8px 0; }
+        .conclusion-box {
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            color: #065f46;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            margin-top: 12px;
+            line-height: 1.5;
+        }
+        .control-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f8fafc;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Thanh chọn thí nghiệm -->
+        <div class="nav-tabs">
+            <button class="tab-btn active" id="tabGuitar" onclick="switchLab('guitar')">
+                🎸 1. Gảy đàn (Độ cao & Tần số)
+            </button>
+            <button class="tab-btn" id="tabDrum" onclick="switchLab('drum')">
+                🥁 2. Đánh trống (Độ to & Biên độ)
+            </button>
+            <button class="tab-btn" id="tabFork" onclick="switchLab('fork')">
+                🔱 3. Gõ âm thoa (Dao động phát ra âm)
+            </button>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- THÍ NGHIỆM 1: GẢY ĐÀN (ĐỘ CAO & TẦN SỐ)                   -->
+        <!-- ========================================================= -->
+        <div id="guitarSection">
+            <div class="header">
+                <div>
+                    <span class="badge">KHTN 7 &bull; Sóng âm</span>
+                    <h1 style="margin: 8px 0 4px 0; font-size: 20px; color: #0f172a;">Thí Nghiệm 1: Khảo Sát Độ Cao Của Âm (Gảy Đàn)</h1>
+                    <p style="color: #64748b; font-size: 13px; margin: 0;">Click hoặc kéo các dây đàn để gảy. So sánh dây dày/dài (trầm) và dây mỏng/ngắn (thanh).</p>
+                </div>
+                <button class="action-btn" style="background: #e11d48;" onclick="resetGuitar()">🔄 Đặt lại</button>
+            </div>
+
+            <div class="main-grid">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <span style="font-size: 13px; color: #64748b; font-weight: 600;">HỢP ÂM ĐÀN GHITA ẢO</span>
+                        <span id="guitarHint" style="font-size: 12px; color: #0284c7; font-weight: 600;">Click trực tiếp vào dây đàn để gảy!</span>
+                    </div>
+                    
+                    <canvas id="guitarCanvas" width="640" height="360"></canvas>
+
+                    <div class="control-group">
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button class="action-btn" onclick="pluckString(0)">Dây 1 (Trầm - Dày)</button>
+                            <button class="action-btn" onclick="pluckString(1)">Dây 2 (Trung bình)</button>
+                            <button class="action-btn" onclick="pluckString(2)">Dây 3 (Thanh - Mỏng)</button>
+                        </div>
+                        <span style="font-size: 12px; color: #64748b;">🎵 Tần số dao động khác nhau tạo âm thanh cao thấp khác nhau.</span>
+                    </div>
+                </div>
+
+                <div class="card" style="display: flex; flexDirection: column; justify-content: space-between;">
+                    <div>
+                        <h3 style="margin-top: 0; font-size: 15px; color: #0f172a;">📋 Hướng dẫn & Hiện tượng</h3>
+                        <ol style="padding-left: 18px; font-size: 13px; color: #334155; line-height: 1.6; margin-bottom: 12px;">
+                            <li>Gảy lần lượt các dây đàn từ trên xuống dưới.</li>
+                            <li>Quan sát tốc độ dao động của dây và sóng âm lan truyền.</li>
+                        </ol>
+                        <div class="status-box" style="background: #f8fafc; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 13px; color: #334155;">
+                            <p>🎸 Dây đang gảy: <span id="gStrName" style="color: #0284c7; font-weight: bold;">Chưa gảy</span></p>
+                            <p>⚡ Tần số (Hz): <span id="gFreq" style="color: #0f172a; font-weight: bold;">0 Hz</span></p>
+                            <p>🔊 Độ cao âm: <span id="gPitch" style="color: #059669; font-weight: bold;">---</span></p>
+                        </div>
+                        <div class="conclusion-box">
+                            <b>💡 Kết luận:</b><br>
+                            - Dây đàn dao động càng nhanh (tần số càng lớn) -> âm phát ra càng <b>cao</b> (thanh).<br>
+                            - Dây dao động càng chậm -> âm càng <b>trầm</b> (thấp).
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- THÍ NGHIỆM 2: MẶT TRỐNG (ĐỘ TO & BIÊN ĐỘ)                 -->
+        <!-- ========================================================= -->
+        <div id="drumSection" class="hidden">
+            <div class="header">
+                <div>
+                    <span class="badge">KHTN 7 &bull; Sóng âm</span>
+                    <h1 style="margin: 8px 0 4px 0; font-size: 20px; color: #0f172a;">Thí Nghiệm 2: Khảo Sát Độ To Của Âm (Đánh Trống)</h1>
+                    <p style="color: #64748b; font-size: 13px; margin: 0;">Click vào mặt trống để gõ. Điều chỉnh lực gõ để thấy các hạt giấy nảy cao thấp khác nhau.</p>
+                </div>
+                <button class="action-btn" style="background: #e11d48;" onclick="resetDrum()">🔄 Đặt lại</button>
+            </div>
+
+            <div class="main-grid">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <span style="font-size: 13px; color: #64748b; font-weight: 600;">MẶT TRỐNG & HẠT GIẤY NHẢY MÚA</span>
+                        <span style="font-size: 12px; color: #0284c7; font-weight: 600;">Click vào trống để gõ!</span>
+                    </div>
+                    
+                    <canvas id="drumCanvas" width="640" height="360"></canvas>
+
+                    <div class="control-group">
+                        <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
+                            <span style="font-size: 13px; font-weight: 600; color: #334155;">Lực gõ (Biên độ):</span>
+                            <input type="range" id="drumForce" min="1" max="10" value="5" style="flex: 1; cursor: pointer;">
+                            <button class="action-btn" style="background: #ea580c;" onclick="hitDrum()">🥁 Gõ trống ngay</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="display: flex; flexDirection: column; justify-content: space-between;">
+                    <div>
+                        <h3 style="margin-top: 0; font-size: 15px; color: #0f172a;">📋 Hướng dẫn & Hiện tượng</h3>
+                        <ol style="padding-left: 18px; font-size: 13px; color: #334155; line-height: 1.6; margin-bottom: 12px;">
+                            <li>Gõ nhẹ và gõ mạnh vào mặt trống.</li>
+                            <li>Quan sát các hạt giấy vụn nhảy trên mặt trống và vòng sóng lan tỏa.</li>
+                        </ol>
+                        <div class="status-box" style="background: #f8fafc; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 13px; color: #334155;">
+                            <p>🎯 Lực gõ hiện tại: <span id="dForceText" style="color: #ea580c; font-weight: bold;">Trung bình (5)</span></p>
+                            <p>📏 Biên độ dao động: <span id="dAmpText" style="color: #0284c7; font-weight: bold;">Vừa</span></p>
+                            <p>🔊 Độ to âm thanh: <span id="dLoudText" style="color: #059669; font-weight: bold;">To vừa</span></p>
+                        </div>
+                        <div class="conclusion-box">
+                            <b>💡 Kết luận:</b><br>
+                            - Gõ mạnh -> mặt trống lệch nhiều -> biên độ dao động lớn -> âm phát ra <b>to</b>.<br>
+                            - Gõ nhẹ -> biên độ nhỏ -> âm <b>nhỏ</b>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- THÍ NGHIỆM 3: GÕ ÂM THOA & CỐC NƯỚC                      -->
+        <!-- ========================================================= -->
+        <div id="forkSection" class="hidden">
+            <div class="header">
+                <div>
+                    <span class="badge">KHTN 7 &bull; Sóng âm</span>
+                    <h1 style="margin: 8px 0 4px 0; font-size: 20px; color: #0f172a;">Thí Nghiệm 3: Nguồn Âm Phát Ra Âm Đều Đang Dao Động (Âm Thoa)</h1>
+                    <p style="color: #64748b; font-size: 13px; margin: 0;">Gõ vào âm thoa bằng búa cao su. Nhúng vào cốc nước để quan sát nước bắn tung tóe chứng minh dao động.</p>
+                </div>
+                <button class="action-btn" style="background: #e11d48;" onclick="resetFork()">🔄 Đặt lại</button>
+            </div>
+
+            <div class="main-grid">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <span style="font-size: 13px; color: #64748b; font-weight: 600;">BÀN THÍ NGHIỆM ÂM THOA & CỐC NƯỚC</span>
+                        <span style="font-size: 12px; color: #0284c7; font-weight: 600;">Click vào âm thoa để gõ!</span>
+                    </div>
+                    
+                    <canvas id="forkCanvas" width="640" height="360"></canvas>
+
+                    <div class="control-group">
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button class="action-btn" style="background: #0284c7;" onclick="strikeFork()">🔨 Gõ búa vào âm thoa</button>
+                            <button class="action-btn" style="background: #059669;" onclick="dipFork()">💧 Nhúng vào cốc nước</button>
+                        </div>
+                        <span style="font-size: 12px; color: #64748b;">Mọi vật phát ra âm thanh đều đang rung động (dao động).</span>
+                    </div>
+                </div>
+
+                <div class="card" style="display: flex; flexDirection: column; justify-content: space-between;">
+                    <div>
+                        <h3 style="margin-top: 0; font-size: 15px; color: #0f172a;">📋 Hướng dẫn & Hiện tượng</h3>
+                        <ol style="padding-left: 18px; font-size: 13px; color: #334155; line-height: 1.6; margin-bottom: 12px;">
+                            <li>Bấm <b>Gõ búa</b> để âm thoa rung động (nhìn thấy nhòe hình).</li>
+                            <li>Bấm <b>Nhúng vào cốc nước</b> để thấy nước bắn tung tóe.</li>
+                        </ol>
+                        <div class="status-box" style="background: #f8fafc; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 13px; color: #334155;">
+                            <p>🔱 Trạng thái âm thoa: <span id="fState" style="color: #0284c7; font-weight: bold;">Đang đứng yên</span></p>
+                            <p>💧 Hiện tượng nước: <span id="fWater" style="color: #64748b; font-weight: bold;">Mặt nước phẳng lặng</span></p>
+                            <p>🔊 Âm thanh: <span id="fSound" style="color: #475569; font-weight: bold;">Không có tiếng kêu</span></p>
+                        </div>
+                        <div class="conclusion-box">
+                            <b>💡 Kết luận:</b><br>
+                            Khi âm thoa phát ra âm thanh, hai nhánh của nó đang <b>dao động</b> (rung động qua lại nhanh chóng).
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // WEB AUDIO API (TẠO ÂM THANH MÔ PHỎNG)
+        // ==========================================
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playTone(freq, duration, type = 'sine', volume = 0.2) {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            
+            gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        function playDrumSound(force) {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            let startFreq = 100 + force * 15;
+            osc.frequency.setValueAtTime(startFreq, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.2);
+            
+            gain.gain.setValueAtTime(0.4 + (force/20), audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.2);
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.2);
+        }
+
+        // ==========================================
+        // CHUYỂN ĐỔI TAB THÍ NGHIỆM
+        // ==========================================
+        let currentLab = 'guitar';
+        function switchLab(tab) {
+            currentLab = tab;
+            document.getElementById('guitarSection').classList.toggle('hidden', tab !== 'guitar');
+            document.getElementById('drumSection').classList.toggle('hidden', tab !== 'drum');
+            document.getElementById('forkSection').classList.toggle('hidden', tab !== 'fork');
+
+            document.getElementById('tabGuitar').classList.toggle('active', tab === 'guitar');
+            document.getElementById('tabDrum').classList.toggle('active', tab === 'drum');
+            document.getElementById('tabFork').classList.toggle('active', tab === 'fork');
+        }
+
+        // ==========================================
+        // THÍ NGHIỆM 1: GẢY ĐÀN (GUITAR STRINGS)
+        // ==========================================
+        const gCanvas = document.getElementById('guitarCanvas');
+        const gCtx = gCanvas.getContext('2d');
+
+        let strings = [
+            { name: "Dây 1 (Trầm)", freq: 130.81, y: 110, length: 480, plucking: 0, thick: 5 },
+            { name: "Dây 2 (Trung)", freq: 220.00, y: 180, length: 480, plucking: 0, thick: 3.5 },
+            { name: "Dây 3 (Thanh)", freq: 440.00, y: 250, length: 480, plucking: 0, thick: 2 }
+        ];
+        let activeStringIdx = null;
+        let gWaves = [];
+
+        function pluckString(idx) {
+            activeStringIdx = idx;
+            strings[idx].plucking = 25; 
+            
+            document.getElementById('gStrName').innerText = strings[idx].name;
+            document.getElementById('gFreq').innerText = strings[idx].freq + " Hz";
+            document.getElementById('gPitch').innerText = (idx === 0) ? "Trầm (Thấp)" : (idx === 1) ? "Trung bình" : "Thanh (Cao)";
+
+            // Phát âm thanh tương ứng tần số
+            playTone(strings[idx].freq, 0.8, 'triangle', 0.25);
+
+            for(let i=0; i<3; i++) {
+                gWaves.push({ x: 320, y: strings[idx].y, r: 10 + i*15, alpha: 0.8, color: idx === 0 ? '#0284c7' : idx === 1 ? '#059669' : '#e11d48' });
+            }
+        }
+
+        function resetGuitar() {
+            strings.forEach(s => s.plucking = 0);
+            activeStringIdx = null;
+            gWaves = [];
+            document.getElementById('gStrName').innerText = "Chưa gảy";
+            document.getElementById('gFreq').innerText = "0 Hz";
+            document.getElementById('gPitch').innerText = "---";
+        }
+
+        function updateGuitar() {
+            gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height);
+
+            gCtx.fillStyle = '#fef3c7';
+            gCtx.strokeStyle = '#d97706';
+            gCtx.lineWidth = 2;
+            gCtx.beginPath();
+            gCtx.roundRect(80, 60, 480, 240, 20);
+            gCtx.fill();
+            gCtx.stroke();
+
+            gCtx.beginPath();
+            gCtx.arc(320, 180, 45, 0, Math.PI*2);
+            gCtx.fillStyle = '#78350f';
+            gCtx.fill();
+
+            gWaves.forEach((w, idx) => {
+                w.r += 1.8;
+                w.alpha -= 0.015;
+                if(w.alpha <= 0) {
+                    gWaves.splice(idx, 1);
+                    return;
+                }
+                gCtx.save();
+                gCtx.beginPath();
+                gCtx.arc(w.x, w.y, w.r, 0, Math.PI*2);
+                gCtx.strokeStyle = w.color;
+                gCtx.globalAlpha = w.alpha;
+                gCtx.lineWidth = 2;
+                gCtx.stroke();
+                gCtx.restore();
+            });
+
+            strings.forEach((s, idx) => {
+                if(s.plucking > 0.1) {
+                    s.plucking *= 0.96; 
+                } else {
+                    s.plucking = 0;
+                }
+
+                gCtx.save();
+                gCtx.strokeStyle = idx === 0 ? '#475569' : idx === 1 ? '#64748b' : '#94a3b8';
+                gCtx.lineWidth = s.thick;
+                gCtx.beginPath();
+                gCtx.moveTo(80, s.y);
+
+                let segments = 40;
+                let stepLen = s.length / segments;
+                for(let i=0; i<=segments; i++) {
+                    let cx = 80 + i * stepLen;
+                    let envelope = Math.sin((i / segments) * Math.PI); 
+                    let vibration = Math.sin(Date.now() / (250 / (idx + 1))) * s.plucking * envelope;
+                    let cy = s.y + vibration;
+                    if(i === 0) gCtx.moveTo(cx, cy);
+                    else gCtx.lineTo(cx, cy);
+                }
+                gCtx.stroke();
+                gCtx.restore();
+
+                gCtx.fillStyle = '#334155';
+                gCtx.font = 'bold 12px sans-serif';
+                gCtx.fillText(`Dây ${idx+1} (${s.freq}Hz)`, 15, s.y + 4);
+            });
+        }
+
+        gCanvas.addEventListener('click', function(e) {
+            const rect = gCanvas.getBoundingClientRect();
+            const my = (e.clientY - rect.top) * (gCanvas.height / rect.height);
+            strings.forEach((s, idx) => {
+                if(Math.abs(my - s.y) < 25) {
+                    pluckString(idx);
+                }
+            });
+        });
+
+        // ==========================================
+        // THÍ NGHIỆM 2: MẶT TRỐNG (DRUM & LOUDNESS)
+        // ==========================================
+        const dCanvas = document.getElementById('drumCanvas');
+        const dCtx = dCanvas.getContext('2d');
+
+        let drumHitAnim = 0;
+        let paperScraps = [];
+        for(let i=0; i<18; i++) {
+            paperScraps.push({
+                x: 240 + Math.random() * 160,
+                y: 180, // Khởi tạo nằm ngay trên mặt trống
+                vy: 0,
+                size: 5 + Math.random() * 5,
+                color: ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'][Math.floor(Math.random()*5)]
+            });
+        }
+        let dRings = [];
+
+        function hitDrum() {
+            let force = parseInt(document.getElementById('drumForce').value);
+            drumHitAnim = force * 2.5; 
+
+            document.getElementById('dForceText').innerText = force <= 3 ? "Yếu (" + force + ")" : force <= 7 ? "Trung bình (" + force + ")" : "Mạnh (" + force + ")";
+            document.getElementById('dLoudText').innerText = force <= 3 ? "Âm nhỏ" : force <= 7 ? "To vừa" : "Rất to (vang)";
+            document.getElementById('dAmpText').innerText = force <= 3 ? "Nhỏ" : force <= 7 ? "Vừa" : "Lớn";
+
+            // Phát âm thanh trống
+            playDrumSound(force);
+
+            // CHỈ đẩy những hạt giấy đang thực sự nằm sát trên mặt trống bay lên
+            let surfaceY = 180;
+            paperScraps.forEach(p => {
+                if (Math.abs(p.y - surfaceY) < 3) {
+                    p.vy = - (force * 1.8) * (0.6 + Math.random() * 0.8);
+                }
+            });
+
+            dRings.push({ r: 40, alpha: 0.9, maxR: 60 + force * 20 });
+        }
+
+        function resetDrum() {
+            drumHitAnim = 0;
+            dRings = [];
+            paperScraps.forEach(p => { p.y = 180; p.vy = 0; });
+        }
+
+        function updateDrum() {
+            dCtx.clearRect(0, 0, dCanvas.width, dCanvas.height);
+
+            dCtx.fillStyle = '#94a3b8';
+            dCtx.beginPath();
+            dCtx.ellipse(320, 220, 150, 60, 0, 0, Math.PI*2);
+            dCtx.fill();
+            dCtx.strokeStyle = '#475569';
+            dCtx.lineWidth = 3;
+            dCtx.stroke();
+
+            if(drumHitAnim > 0.2) {
+                drumHitAnim *= 0.88;
+            } else {
+                drumHitAnim = 0;
+            }
+
+            let surfaceY = 180 - drumHitAnim;
+
+            dCtx.fillStyle = '#f1f5f9';
+            dCtx.beginPath();
+            dCtx.ellipse(320, surfaceY, 140, 50, 0, 0, Math.PI*2);
+            dCtx.fill();
+            dCtx.strokeStyle = '#3b82f6';
+            dCtx.lineWidth = 4;
+            dCtx.stroke();
+
+            dRings.forEach((ring, idx) => {
+                ring.r += 2.5;
+                ring.alpha -= 0.02;
+                if(ring.alpha <= 0 || ring.r > ring.maxR) {
+                    dRings.splice(idx, 1);
+                    return;
+                }
+                dCtx.save();
+                dCtx.beginPath();
+                dCtx.ellipse(320, 180, ring.r * 2.5, ring.r, 0, 0, Math.PI*2);
+                dCtx.strokeStyle = '#2563eb';
+                dCtx.globalAlpha = ring.alpha;
+                dCtx.lineWidth = 2.5;
+                dCtx.stroke();
+                dCtx.restore();
+            });
+
+            // Cập nhật vị trí hạt giấy
+            paperScraps.forEach(p => {
+                p.y += p.vy;
+                if (p.vy !== 0) {
+                    p.vy += 0.45; // Trọng lực kéo xuống
+                }
+
+                // Khi rơi chạm xuống mặt trống -> dừng lại hoàn toàn
+                if(p.y >= 180) {
+                    p.y = 180;
+                    p.vy = 0;
+                }
+
+                dCtx.fillStyle = p.color;
+                dCtx.fillRect(p.x - p.size/2, p.y - p.size/2, p.size, p.size);
+            });
+        }
+
+        dCanvas.addEventListener('click', function() {
+            hitDrum();
+        });
+
+
+        // ==========================================
+        // THÍ NGHIỆM 3: GÕ ÂM THOA & CỐC NƯỚC (TUNING FORK)
+        // ==========================================
+        const fCanvas = document.getElementById('forkCanvas');
+        const fCtx = fCanvas.getContext('2d');
+
+        let forkVibrating = false;
+        let forkVibeTimer = 0;
+        let forkDipped = false;
+        let splashes = [];
+
+        function strikeFork() {
+            forkVibrating = true;
+            forkVibeTimer = 180; 
+            document.getElementById('fState').innerText = "Đang dao động (Rung rất nhanh)";
+            document.getElementById('fState').style.color = "#e11d48";
+            document.getElementById('fSound').innerText = "Phát âm thanh chuẩn (440Hz)";
+            
+            // Phát âm thanh âm thoa (Sine wave 440Hz)
+            playTone(440, 1.2, 'sine', 0.2);
+
+            if(forkDipped) {
+                for(let i=0; i<15; i++) {
+                    splashes.push({
+                        x: 395 + (Math.random()-0.5)*30,
+                        y: 240,
+                        vx: (Math.random()-0.5)*6,
+                        vy: -4 - Math.random()*6,
+                        r: 3 + Math.random()*3
+                    });
+                }
+                document.getElementById('fWater').innerText = "Nước bắn tung tóe mạnh!";
+                document.getElementById('fWater').style.color = "#e11d48";
+            }
+        }
+
+        function dipFork() {
+            forkDipped = !forkDipped;
+            if(forkDipped) {
+                document.getElementById('fWater').innerText = forkVibrating ? "Nước bắn tung tóe mạnh!" : "Mặt nước gợn sóng nhẹ";
+                if(forkVibrating) {
+                    for(let i=0; i<15; i++) {
+                        splashes.push({
+                            x: 395 + (Math.random()-0.5)*30,
+                            y: 240,
+                            vx: (Math.random()-0.5)*6,
+                            vy: -4 - Math.random()*6,
+                            r: 3 + Math.random()*3
+                        });
+                    }
+                }
+            } else {
+                document.getElementById('fWater').innerText = "Đã nhấc âm thoa khỏi cốc nước";
+            }
+        }
+
+        function resetFork() {
+            forkVibrating = false;
+            forkVibeTimer = 0;
+            forkDipped = false;
+            splashes = [];
+            document.getElementById('fState').innerText = "Đang đứng yên";
+            document.getElementById('fState').style.color = "#0284c7";
+            document.getElementById('fWater').innerText = "Mặt nước phẳng lặng";
+            document.getElementById('fSound').innerText = "Không có tiếng kêu";
+        }
+
+        function updateFork() {
+            fCtx.clearRect(0, 0, fCanvas.width, fCanvas.height);
+
+            if(forkVibeTimer > 0) {
+                forkVibeTimer--;
+                if(forkVibeTimer === 0) {
+                    forkVibrating = false;
+                    document.getElementById('fState').innerText = "Đã dừng dao động";
+                    document.getElementById('fState').style.color = "#475569";
+                    document.getElementById('fSound').innerText = "Hết tiếng kêu";
+                }
+            }
+
+            // Vẽ cốc nước
+            fCtx.fillStyle = 'rgba(224, 242, 254, 0.7)';
+            fCtx.strokeStyle = '#0284c7';
+            fCtx.lineWidth = 2;
+            fCtx.beginPath();
+            fCtx.roundRect(360, 200, 80, 110, [0,0,12,12]);
+            fCtx.fill();
+            fCtx.stroke();
+
+            fCtx.fillStyle = 'rgba(56, 189, 248, 0.4)';
+            fCtx.fillRect(362, 235, 76, 73);
+
+            splashes.forEach((sp, idx) => {
+                sp.x += sp.vx;
+                sp.y += sp.vy;
+                sp.vy += 0.4; 
+                if(sp.y > 310) { splashes.splice(idx, 1); return; }
+
+                fCtx.fillStyle = '#0284c7';
+                fCtx.beginPath();
+                fCtx.arc(sp.x, sp.y, sp.r, 0, Math.PI*2);
+                fCtx.fill();
+            });
+
+            // Vẽ hình dáng âm thoa kim loại chuẩn xác (Không có thanh đỏ lạ)
+            let forkX = forkDipped ? 400 : 250;
+            let forkY = 140;
+
+            fCtx.save();
+            fCtx.lineWidth = 12;
+            fCtx.strokeStyle = '#94a3b8'; // Màu kim loại sáng
+            fCtx.lineCap = 'round';
+            fCtx.lineJoin = 'round';
+
+            let jitterX = forkVibrating ? (Math.random() - 0.5) * 6 : 0;
+
+            // Cán cầm âm thoa đi xuống
+            fCtx.beginPath();
+            fCtx.moveTo(forkX, forkY + 130);
+            fCtx.lineTo(forkX, forkY + 60);
+            fCtx.stroke();
+
+            // Phần uốn cong chữ U ở gốc âm thoa
+            fCtx.beginPath();
+            fCtx.moveTo(forkX - 30, forkY + 10);
+            fCtx.quadraticCurveTo(forkX, forkY + 70, forkX, forkY + 60);
+            fCtx.quadraticCurveTo(forkX, forkY + 70, forkX + 30, forkY + 10);
+            fCtx.stroke();
+
+            // Hai nhánh song song hướng lên trên (Có hiệu ứng rung lắc nếu đang dao động)
+            fCtx.beginPath();
+            fCtx.moveTo(forkX - 30, forkY + 10);
+            fCtx.lineTo(forkX - 30 + jitterX, forkY - 70);
+            fCtx.stroke();
+
+            fCtx.beginPath();
+            fCtx.moveTo(forkX + 30, forkY + 10);
+            fCtx.lineTo(forkX + 30 - jitterX, forkY - 70);
+            fCtx.stroke();
+
+            fCtx.restore();
+        }
+
+        fCanvas.addEventListener('click', function() {
+            strikeFork();
+        });
+
+        // ==========================================
+        // VÒNG LẶP ANIMATION CHÍNH (60 FPS)
+        // ==========================================
+        function mainLoop() {
+            if (currentLab === 'guitar') {
+                updateGuitar();
+            } else if (currentLab === 'drum') {
+                updateDrum();
+            } else if (currentLab === 'fork') {
+                updateFork();
+            }
+            requestAnimationFrame(mainLoop);
+        }
+
+        mainLoop();
+    </script>
+</body>
+</html>

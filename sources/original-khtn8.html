@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Lab - Phòng Thí Nghiệm Ảo KHTN 8</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            user-select: none;
+        }
+        .container {
+            width: 100%;
+            max-width: 1000px;
+        }
+        /* Thanh điều hướng chọn thí nghiệm */
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            background: #ffffff;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tab-btn:hover {
+            background: #f1f5f9;
+        }
+        .tab-btn.active {
+            background: #4f46e5;
+            color: #ffffff;
+            border-color: #4f46e5;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+        }
+        .header {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            padding: 18px 24px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+        }
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2.2fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 840px) {
+            .main-grid { grid-template-columns: 1fr; }
+        }
+        .card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(15, 23, 42, 0.05);
+        }
+        canvas {
+            background: radial-gradient(circle at center, #ffffff 0%, #f1f5f9 100%);
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        button.action-btn {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 9px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.15s ease;
+        }
+        button.action-btn:hover { background: #4338ca; transform: translateY(-1px); }
+        button.action-btn:disabled {
+            background: #cbd5e1 !important;
+            color: #64748b;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none !important;
+        }
+        .btn-reset { background: #e11d48 !important; }
+        .btn-reset:hover { background: #be123c !important; }
+        .btn-burner-on { background: #ea580c !important; box-shadow: 0 0 12px rgba(234, 88, 12, 0.4); }
+        .btn-burner-off { background: #64748b !important; }
+        .btn-active-step {
+            outline: 2px solid #4f46e5;
+            outline-offset: 2px;
+        }
+        
+        .weight-btn {
+            width: 42px;
+            height: 42px;
+            background: #f1f5f9;
+            border-radius: 10px;
+            border: 2px solid #cbd5e1;
+            color: #334155;
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+        }
+        .weight-btn:hover { background: #e2e8f0; }
+        .weight-btn.active {
+            background: #4f46e5;
+            border-color: #4f46e5;
+            color: white;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+        }
+        .badge {
+            background: #e0f2fe;
+            color: #0284c7;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-chem {
+            background: #fef3c7;
+            color: #d97706;
+        }
+        .hidden { display: none !important; }
+        .status-box p { margin: 8px 0; }
+        .conclusion-box {
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            color: #065f46;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            margin-top: 12px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Menu chọn bài thí nghiệm -->
+        <div class="nav-tabs">
+            <button class="tab-btn active" id="tabFes" onclick="switchLab('fes')">
+                🔥 Thí nghiệm 3 (Hóa học): Sắt + Lưu huỳnh
+            </button>
+            <button class="tab-btn" id="tabChem" onclick="switchLab('chem')">
+                🧪 Thí nghiệm 2 (Hóa học): Sự chuyển thể của nước
+            </button>
+            <button class="tab-btn" id="tabPhys" onclick="switchLab('phys')">
+                ⚖️ Thí nghiệm 1 (Vật lý): Tác dụng làm quay của lực
+            </button>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- KHU VỰC THÍ NGHIỆM 3: HÓA HỌC (SẮT + LƯU HUỲNH - HÌNH 2.2)-->
+        <!-- ========================================================= -->
+        <div id="fesSection">
+            <div class="header">
+                <div>
+                    <span class="badge badge-chem">KHTN 8 &bull; Hóa học (Hình 2.2)</span>
+                    <h1 style="margin: 8px 0 4px 0; font-size: 20px; color: #0f172a;">Thí Nghiệm: Biến Đổi Hóa Học (Sắt Phản Ứng Với Lưu Huỳnh)</h1>
+                    <p style="color: #64748b; font-size: 13px; margin: 0;">So sánh tính chất từ tính của hỗn hợp bột Fe + S trước và sau khi đun nóng tạo chất mới FeS.</p>
+                </div>
+                <button class="action-btn btn-reset" onclick="resetFesLab()">🔄 Làm lại từ đầu</button>
+            </div>
+
+            <div class="main-grid">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <span style="font-size: 13px; color: #64748b; font-weight: 600;">BÀN THÍ NGHIỆM HÓA HỌC (ỐNG 1 & ỐNG 2)</span>
+                        <label style="font-size: 12px; color: #0284c7; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                            <input type="checkbox" id="toggleFesAtoms" checked> 🔬 Bật kính hiển vi nguyên tử Fe & S
+                        </label>
+                    </div>
+
+                    <canvas id="fesCanvas" width="640" height="380"></canvas>
+
+                    <!-- Bảng điều khiển tương tác từng bước -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: 12px 16px; border-radius: 10px; border: 1px solid #e2e8f0; margin-top: 15px; flex-wrap: wrap; gap: 8px;">
+                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                            <button id="btnFesMix" class="action-btn" style="background: #0284c7;" onclick="fesActionMix()">1. Trộn đều Fe + S</button>
+                            <button id="btnFesMag1" class="action-btn" style="background: #4f46e5;" onclick="fesActionMagnet1()" disabled>2. Thử nam châm ống (1)</button>
+                            <button id="btnFesHeat" class="action-btn" style="background: #ea580c;" onclick="fesActionHeat()" disabled>3. Đun nóng ống (2)</button>
+                            <button id="btnFesMag2" class="action-btn" style="background: #059669;" onclick="fesActionMagnet2()" disabled>4. Thử nam châm ống (2)</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h3 style="margin-top: 0; font-size: 15px; color: #0f172a;">📋 Các bước tiến hành (Hình 2.2)</h3>
+                        <ol style="padding-left: 18px; font-size: 13px; color: #334155; line-height: 1.55; margin-bottom: 12px;">
+                            <li><b>Bước 1:</b> Trộn đều bột sắt (xám) và bột lưu huỳnh (vàng) tỉ lệ 7:4, chia vào ống (1) và ống (2).</li>
+                            <li><b>Bước 2:</b> Đưa nam châm lại gần ống (1) &rarr; Bột sắt bị hút lên thành ống.</li>
+                            <li><b>Bước 3:</b> Đun nóng mạnh đáy ống (2) khoảng 30s rồi để nguội &rarr; Hỗn hợp cháy sáng tạo chất rắn xám đen.</li>
+                            <li><b>Bước 4:</b> Đưa nam châm lại gần ống (2) &rarr; Chất rắn không bị nam châm hút.</li>
+                        </ol>
+
+                        <h4 style="color: #4f46e5; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; margin: 10px 0 8px 0;">Kết quả quan sát trực tiếp</h4>
+                        <div class="status-box" style="background: #f8fafc; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 13px; color: #334155;">
+                            <p>🧪 Trạng thái: <span id="fesStepText" style="color: #0284c7; font-weight: bold;">Chưa trộn (2 lớp bột tách riêng)</span></p>
+                            <p>🧲 Ống (1) [Fe + S]: <span id="fesTube1Res" style="color: #64748b; font-weight: bold;">Chưa thử nam châm</span></p>
+                            <p>🧲 Ống (2) [Sau đun]: <span id="fesTube2Res" style="color: #64748b; font-weight: bold;">Chưa đun nóng</span></p>
+                        </div>
+
+                        <div class="conclusion-box">
+                            <b>💡 Kết luận rút ra:</b><br>
+                            &bull; <b>Ống (1):</b> Chỉ là hỗn hợp cơ học, sắt giữ nguyên tính từ &rarr; <b>Biến đổi vật lí</b>.<br>
+                            &bull; <b>Ống (2):</b> Sinh ra chất mới <b>Sắt(II) sulfide (FeS)</b> không còn bị nam châm hút &rarr; <b>Biến đổi hóa học</b>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- KHU VỰC THÍ NGHIỆM 2: HÓA HỌC (SỰ CHUYỂN THỂ CỦA NƯỚC)    -->
+        <!-- ========================================================= -->
+        <div id="chemSection" class="hidden">
+            <div class="header">
+                <div>
+                    <span class="badge badge-chem">KHTN 8 &bull; Hóa học (Hình 2.1)</span>
+                    <h1 style="margin: 8px 0 4px 0; font-size: 20px; color: #0f172a;">Thí Nghiệm: Biến Đổi Vật Lí & Sự Chuyển Thể Của Nước</h1>
+                    <p style="color: #64748b; font-size: 13px; margin: 0;">Đun nóng nước đá từ 0°C lên 100°C hoặc làm lạnh để quan sát quá trình chuyển thể.</p>
+                </div>
+                <button class="action-btn btn-reset" onclick="resetChemLab()">🔄 Đặt lại nước đá (0°C)</button>
+            </div>
+
+            <div class="main-grid">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <span style="font-size: 13px; color: #64748b; font-weight: 600;">BÀN THÍ NGHIỆM HÓA HỌC</span>
+                        <label style="font-size: 12px; color: #0284c7; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                            <input type="checkbox" id="toggleMolecules" checked> 🔬 Bật kính hiển vi phân tử H₂O
+                        </label>
+                    </div>
+
+                    <canvas id="chemCanvas" width="640" height="380"></canvas>
+
+                    <div style="display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: 12px 16px; border-radius: 10px; border: 1px solid #e2e8f0; margin-top: 15px; flex-wrap: wrap; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <button id="btnBurner" class="action-btn btn-burner-off" onclick="toggleBurner()">🔥 Bật đèn cồn</button>
+                            <button class="action-btn" style="background: #0284c7;" onclick="coolDownWater()">❄️ Làm lạnh (Ngưng tụ/Đông đặc)</button>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 12px; color: #475569; font-weight: 600;">Chỉnh nhanh nhiệt độ:</span>
+                            <input type="range" id="tempSlider" min="-10" max="110" value="0" oninput="manualTemp(this.value)" style="cursor: pointer;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h3 style="margin-top: 0; font-size: 15px; color: #0f172a;">📋 Các bước tiến hành (Hình 2.1)</h3>
+                        <ol style="padding-left: 18px; font-size: 13px; color: #334155; line-height: 1.6; margin-bottom: 12px;">
+                            <li><b>Bước a (0°C):</b> Cho nước đá viên vào cốc thủy tinh, đặt trên kiềng sắt và cắm nhiệt kế.</li>
+                            <li><b>Bước b (~25°C):</b> Để đá tan hết thành nước lỏng ở nhiệt độ phòng.</li>
+                            <li><b>Bước c (100°C):</b> Bấm <b>Bật đèn cồn</b> đun nóng đến khi nước sôi và bốc hơi mạnh.</li>
+                            <li><i>Quá trình ngược:</i> Bấm <b>Làm lạnh</b> để quan sát hơi nước ngưng tụ và đông đặc lại.</li>
+                        </ol>
+
+                        <h4 style="color: #4f46e5; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; margin: 12px 0 8px 0;">Theo dõi trạng thái</h4>
+                        <div class="status-box" style="background: #f8fafc; padding: 12px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 13px; color: #334155;">
+                            <p>🌡️ Nhiệt độ nhiệt kế: <span id="tempDisplay" style="color: #e11d48; font-weight: bold; font-size: 15px;">0.0 °C</span></p>
+                            <p>🧊 Thể tồn tại: <span id="stateDisplay" style="color: #0284c7; font-weight: bold;">Thể rắn (Nước đá đang tan)</span></p>
+                            <p>🧪 Công thức hóa học: <span style="color: #059669; font-weight: bold;">Vẫn là H₂O (Không đổi)</span></p>
+                        </div>
+
+                        <div class="conclusion-box">
+                            <b>💡 Kết luận rút ra:</b><br>
+                            Trong quá trình nóng chảy, sôi, ngưng tụ hay đông đặc, nước chỉ thay đổi về <b>trạng thái (thể)</b> chứ <b>không biến đổi thành chất khác</b>. Đây là <b>biến đổi vật lí</b>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- KHU VỰC THÍ NGHIỆM 1: VẬT LÝ (TÁC DỤNG LÀM QUAY CỦA LỰC)  -->
+        <!-- ========================================================= -->
+        <div id="physSection" class="hidden">
+            <div class="header">
+                <div>
+                    <span class="badge">KHTN 8 &bull; Vật lý (Hình 18.1)</span>
+                    <h1 style="margin: 8px 0 4px 0; font-size: 20px; color: #0f172a;">Thí Nghiệm: Tác Dụng Làm Quay Của Lực</h1>
+                    <p style="color: #64748b; font-size: 13px; margin: 0;">Thanh đòn có quán tính, ma sát trục quay và quả nặng luôn hướng thẳng đứng theo trọng lực.</p>
+                </div>
+                <button class="action-btn btn-reset" onclick="resetPhysLab()">🔄 Đặt lại thí nghiệm</button>
+            </div>
+
+            <div class="main-grid">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <span style="font-size: 13px; color: #64748b; font-weight: 600;">BÀN THÍ NGHIỆM VẬT LÝ</span>
+                        <span id="hoverHint" style="font-size: 12px; color: #0284c7; font-weight: 500;">Di chuột vào các lỗ trên thanh để chọn vị trí</span>
+                    </div>
+                    
+                    <canvas id="physCanvas" width="640" height="360" style="cursor: pointer;"></canvas>
+
+                    <div style="display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: 12px 16px; border-radius: 10px; border: 1px solid #e2e8f0; margin-top: 15px; flex-wrap: wrap; gap: 10px;">
+                        <div style="display: flex; align-items: center;">
+                            <span style="font-size: 13px; margin-right: 12px; color: #334155; font-weight: 500;">Số quả nặng treo thêm:</span>
+                            <button class="weight-btn active" id="btnW1" onclick="selectWeight(1)">1</button>
+                            <button class="weight-btn" id="btnW2" onclick="selectWeight(2)">2</button>
+                            <button class="weight-btn" id="btnW3" onclick="selectWeight(3)">3</button>
+                        </div>
+                        <div style="font-size: 12px; color: #64748b; text-align: right;">
+                            <div>🖱️ <b>Click trái:</b> Treo thêm quả nặng</div>
+                            <div>🖱️ <b>Click phải:</b> Tháo quả nặng</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h3 style="margin-top: 0; font-size: 15px; color: #0f172a;">📋 Quy trình SGK (Hình 18.1)</h3>
+                        <ol style="padding-left: 18px; font-size: 13px; color: #334155; line-height: 1.6; margin-bottom: 15px;">
+                            <li>Treo quả nặng vào <b>trục quay O</b> (ở giữa) &rarr; Quan sát thanh có quay không.</li>
+                            <li>Tháo ra, treo vào <b>điểm A</b> (mút trái) &rarr; Quan sát chiều quay.</li>
+                            <li>Tháo ra, treo vào <b>điểm C</b> (mút phải) &rarr; So sánh chiều quay với khi treo ở A.</li>
+                        </ol>
+                        <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 15px 0;">
+                        <h4 style="color: #4f46e5; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">Phân tích vật lý trực tiếp</h4>
+                        <div class="status-box" style="background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 13px; color: #334155;">
+                            <p>🔹 Momen bên trái (A): <span id="leftTorqueText" style="color: #0284c7; font-weight: bold;">0</span></p>
+                            <p>🔹 Momen bên phải (C): <span id="rightTorqueText" style="color: #0284c7; font-weight: bold;">0</span></p>
+                            <p>🔹 Góc lệch hiện tại: <span id="angleText" style="color: #0f172a; font-weight: bold;">0.0°</span></p>
+                            <div id="resultStatus" style="color: #059669; font-weight: 600; margin-top: 10px; border-top: 1px solid #e2e8f0; padding-top: 10px; line-height: 1.4;">
+                                Thanh đang nằm cân bằng theo phương ngang.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // CHUYỂN ĐỔI GIỮA 3 THÍ NGHIỆM
+        // ==========================================
+        let currentTab = 'fes';
+        function switchLab(tab) {
+            currentTab = tab;
+            document.getElementById('fesSection').classList.toggle('hidden', tab !== 'fes');
+            document.getElementById('chemSection').classList.toggle('hidden', tab !== 'chem');
+            document.getElementById('physSection').classList.toggle('hidden', tab !== 'phys');
+
+            document.getElementById('tabFes').classList.toggle('active', tab === 'fes');
+            document.getElementById('tabChem').classList.toggle('active', tab === 'chem');
+            document.getElementById('tabPhys').classList.toggle('active', tab === 'phys');
+        }
+
+        // =========================================================================
+        // LOGIC THÍ NGHIỆM 3: SẮT TÁC DỤNG VỚI LƯU HUỲNH (ANIMATION MƯỢT MÀ)
+        // =========================================================================
+        const fesCanvas = document.getElementById('fesCanvas');
+        const fesCtx = fesCanvas.getContext('2d');
+
+        let fesMixed = false;
+        let fesMixProgress = 0;         // 0 -> 1: hiệu ứng lắc/trộn đều 2 lớp bột
+        let fesMagnetTarget = 'none';   // 'none' | 'tube1' | 'tube2'
+        let fesMagnetX = 55;            // Tọa độ X hiện tại của nam châm (trượt mượt)
+        let fesMagnetY = 210;
+        let fesHeating = false;         // Đang bật đèn cồn đun ống 2
+        let fesHeatTimer = 0;           // Đếm thời gian đun & phản ứng tỏa nhiệt
+        let fesTube2Temp = 25;          // Nhiệt độ đáy ống 2 (°C)
+        let fesReactionDone = false;    // Đã biến đổi hoàn toàn thành FeS chưa
+        let fesBurnerX = 335;           // Tọa độ X đèn cồn (trượt mượt vào dưới ống 2)
+        let fesSmokes = [];             // Khói lưu huỳnh bay nhẹ trong ống khi đun
+        let fesSparks = [];             // Tia sáng đỏ rực trong khối bột khi phản ứng
+
+        // Tạo các hạt bột Fe (xám sẫm) và bột S (vàng tươi) trong 2 ống nghiệm
+        let tube1Particles = [];
+        let tube2Particles = [];
+        let fesAtoms = [];              // Các nguyên tử Fe và S cho kính hiển vi
+
+        function initFesParticles() {
+            tube1Particles = [];
+            tube2Particles = [];
+            // Mỗi ống có 70 hạt (40 Fe màu xám, 30 S màu vàng)
+            for (let i = 0; i < 70; i++) {
+                let isIron = i < 40;
+                // Trước khi trộn: S ở lớp dưới, Fe ở lớp trên
+                let unmixedY = isIron ? (215 + Math.random() * 28) : (244 + Math.random() * 32);
+                let mixedY = 215 + Math.random() * 62;
+                let rx = (Math.random() - 0.5) * 26;
+
+                tube1Particles.push({
+                    isIron: isIron,
+                    rx: rx,
+                    unmixedY: unmixedY,
+                    mixedY: mixedY,
+                    x: 130 + rx,
+                    y: unmixedY,
+                    attractedOffset: 0
+                });
+
+                tube2Particles.push({
+                    isIron: isIron,
+                    rx: rx,
+                    unmixedY: unmixedY,
+                    mixedY: mixedY,
+                    x: 270 + rx,
+                    y: unmixedY
+                });
+            }
+
+            // Khởi tạo 12 cặp nguyên tử Fe & S cho kính hiển vi
+            fesAtoms = [];
+            for (let i = 0; i < 12; i++) {
+                fesAtoms.push({
+                    feX: (Math.random() - 0.5) * 120,
+                    feY: (Math.random() - 0.5) * 120,
+                    sX: (Math.random() - 0.5) * 120,
+                    sY: (Math.random() - 0.5) * 120,
+                    vx1: (Math.random() - 0.5) * 1.4,
+                    vy1: (Math.random() - 0.5) * 1.4,
+                    vx2: (Math.random() - 0.5) * 1.4,
+                    vy2: (Math.random() - 0.5) * 1.4,
+                    bondAngle: Math.random() * Math.PI * 2
+                });
+            }
+        }
+        initFesParticles();
+
+        function fesActionMix() {
+            fesMixed = true;
+            document.getElementById('btnFesMix').disabled = true;
+            document.getElementById('btnFesMag1').disabled = false;
+            document.getElementById('btnFesHeat').disabled = false;
+            document.getElementById('fesStepText').innerText = "Đã trộn đều hỗn hợp Fe + S vào 2 ống";
+        }
+
+        function fesActionMagnet1() {
+            fesMagnetTarget = (fesMagnetTarget === 'tube1') ? 'none' : 'tube1';
+            if (fesMagnetTarget === 'tube1') {
+                document.getElementById('fesTube1Res').innerText = "Bột sắt bị nam châm hút mạnh về thành ống!";
+                document.getElementById('fesTube1Res').style.color = "#0284c7";
+            }
+        }
+
+        function fesActionHeat() {
+            fesMagnetTarget = 'none'; // Rút nam châm ra để đun ống 2
+            fesHeating = true;
+            fesHeatTimer = 0;
+            document.getElementById('btnFesHeat').disabled = true;
+            document.getElementById('fesStepText').innerText = "Đang đun nóng mạnh đáy ống nghiệm (2)...";
+            document.getElementById('fesTube2Res').innerText = "Đang đun nóng (Phản ứng tỏa nhiệt)...";
+            document.getElementById('fesTube2Res').style.color = "#ea580c";
+        }
+
+        function fesActionMagnet2() {
+            fesMagnetTarget = (fesMagnetTarget === 'tube2') ? 'none' : 'tube2';
+            if (fesMagnetTarget === 'tube2') {
+                document.getElementById('fesTube2Res').innerText = "KHÔNG bị nam châm hút (Đã thành chất mới FeS)!";
+                document.getElementById('fesTube2Res').style.color = "#e11d48";
+            }
+        }
+
+        function resetFesLab() {
+            fesMixed = false;
+            fesMixProgress = 0;
+            fesMagnetTarget = 'none';
+            fesMagnetX = 55;
+            fesHeating = false;
+            fesHeatTimer = 0;
+            fesTube2Temp = 25;
+            fesReactionDone = false;
+            fesBurnerX = 335;
+            fesSmokes = [];
+            fesSparks = [];
+            initFesParticles();
+
+            document.getElementById('btnFesMix').disabled = false;
+            document.getElementById('btnFesMag1').disabled = true;
+            document.getElementById('btnFesHeat').disabled = true;
+            document.getElementById('btnFesMag2').disabled = true;
+
+            document.getElementById('fesStepText').innerText = "Chưa trộn (2 lớp bột tách riêng)";
+            document.getElementById('fesTube1Res').innerText = "Chưa thử nam châm";
+            document.getElementById('fesTube1Res').style.color = "#64748b";
+            document.getElementById('fesTube2Res').innerText = "Chưa đun nóng";
+            document.getElementById('fesTube2Res').style.color = "#64748b";
+        }
+
+        function updateFesPhysics() {
+            // 1. Animation trộn đều 2 lớp bột
+            if (fesMixed && fesMixProgress < 1) {
+                fesMixProgress = Math.min(1, fesMixProgress + 0.025);
+            }
+
+            // 2. Animation di chuyển mượt của Nam châm
+            let targetMagX = 50;
+            let targetMagY = 235;
+            if (fesMagnetTarget === 'tube1') {
+                targetMagX = 82; // Áp sát bên trái ống 1 (tâm ống 1 ở x=130)
+                targetMagY = 232;
+            } else if (fesMagnetTarget === 'tube2') {
+                targetMagX = 318; // Áp sát bên phải ống 2 (tâm ống 2 ở x=270)
+                targetMagY = 232;
+            }
+            fesMagnetX += (targetMagX - fesMagnetX) * 0.12;
+            fesMagnetY += (targetMagY - fesMagnetY) * 0.12;
+
+            // 3. Cập nhật vị trí từng hạt trong ống (1) - Bột sắt bị hút về phía nam châm
+            let magDist1 = Math.abs(fesMagnetX - 82);
+            let pullStrength1 = (fesMagnetTarget === 'tube1' && magDist1 < 25) ? (1 - magDist1 / 25) : 0;
+
+            tube1Particles.forEach(p => {
+                let baseY = p.unmixedY * (1 - fesMixProgress) + p.mixedY * fesMixProgress;
+                let baseX = 130 + p.rx;
+
+                if (p.isIron && pullStrength1 > 0) {
+                    // Các hạt sắt bị hút dạt sang thành trái ống nghiệm và nhô lên sát cực nam châm
+                    let attractX = 115 + (Math.sin(p.mixedY) * 3);
+                    let attractY = 212 + (p.mixedY - 215) * 0.65;
+                    p.x += (attractX - p.x) * 0.15;
+                    p.y += (attractY - p.y) * 0.15;
+                } else {
+                    p.x += (baseX - p.x) * 0.15;
+                    p.y += (baseY - p.y) * 0.15;
+                }
+            });
+
+            // 4. Cập nhật quá trình đun nóng & phản ứng hóa học ở ống (2)
+            let targetBurnerX = fesHeating ? 270 : 345;
+            fesBurnerX += (targetBurnerX - fesBurnerX) * 0.1;
+
+            if (fesHeating) {
+                fesHeatTimer++;
+                if (fesTube2Temp < 650) {
+                    fesTube2Temp += 4.5;
+                }
+                // Tạo khói nhẹ bốc lên trong ống 2
+                if (Math.random() < 0.35) {
+                    fesSmokes.push({
+                        x: 270 + (Math.random() - 0.5) * 16,
+                        y: 215,
+                        r: 4 + Math.random() * 4,
+                        alpha: 0.45,
+                        vy: -1.1 - Math.random() * 0.6
+                    });
+                }
+                // Khi đủ nóng (> 450°C), phản ứng tỏa nhiệt bùng sáng đỏ rực trong lòng hỗn hợp
+                if (fesTube2Temp > 420 && Math.random() < 0.6) {
+                    fesSparks.push({
+                        x: 270 + (Math.random() - 0.5) * 24,
+                        y: 225 + Math.random() * 48,
+                        r: 2 + Math.random() * 3,
+                        life: 1.0
+                    });
+                }
+                // Sau khoảng 3.2 giây đun nóng mạnh -> Tự động tắt đèn cồn và để nguội như SGK
+                if (fesHeatTimer > 190) {
+                    fesHeating = false;
+                    fesReactionDone = true;
+                    document.getElementById('btnFesMag2').disabled = false;
+                    document.getElementById('fesStepText').innerText = "Đã đun xong & để nguội! Sẵn sàng thử nam châm ống (2)";
+                    document.getElementById('fesTube2Res').innerText = "Tạo thành chất rắn xám đen FeS (Đã nguội)";
+                    document.getElementById('fesTube2Res').style.color = "#059669";
+                }
+            } else {
+                // Nguội dần về nhiệt độ phòng 25°C
+                if (fesTube2Temp > 25) {
+                    fesTube2Temp = Math.max(25, fesTube2Temp - 3.5);
+                }
+            }
+
+            // Cập nhật khói và tia lửa phản ứng
+            for (let i = fesSmokes.length - 1; i >= 0; i--) {
+                fesSmokes[i].y += fesSmokes[i].vy;
+                fesSmokes[i].r += 0.08;
+                fesSmokes[i].alpha -= 0.007;
+                if (fesSmokes[i].alpha <= 0) fesSmokes.splice(i, 1);
+            }
+            for (let i = fesSparks.length - 1; i >= 0; i--) {
+                fesSparks[i].life -= 0.05;
+                if (fesSparks[i].life <= 0) fesSparks.splice(i, 1);
+            }
+        }
+
+        function drawFesLab() {
+            fesCtx.clearRect(0, 0, fesCanvas.width, fesCanvas.height);
+
+            // Mặt bàn thí nghiệm
+            fesCtx.fillStyle = '#e2e8f0';
+            fesCtx.fillRect(15, 340, 610, 12);
+
+            // 1. Giá thí nghiệm kép giữ 2 ống nghiệm
+            fesCtx.fillStyle = '#475569';
+            fesCtx.fillRect(185, 330, 30, 10); // Đế giá
+            fesCtx.fillStyle = '#94a3b8';
+            fesCtx.fillRect(196, 45, 8, 285);   // Trụ đứng ở giữa 2 ống
+
+            // Thanh kẹp ngang giữ ống (1) ở x=130 và ống (2) ở x=270
+            fesCtx.fillStyle = '#334155';
+            fesCtx.fillRect(112, 115, 176, 8);
+            fesCtx.beginPath();
+            fesCtx.arc(200, 119, 8, 0, Math.PI * 2);
+            fesCtx.fillStyle = '#0284c7';
+            fesCtx.fill();
+
+            // 2. Vẽ Ống nghiệm (1) - Đối chứng (bên trái, x=130)
+            drawGlassTube(fesCtx, 130, 95, 36, 190, "Ống (1)", "Hỗn hợp Fe + S", false, 25);
+            // Vẽ các hạt bột Fe & S trong ống 1
+            tube1Particles.forEach(p => {
+                fesCtx.beginPath();
+                fesCtx.arc(p.x, p.y, 2.3, 0, Math.PI * 2);
+                fesCtx.fillStyle = p.isIron ? '#334155' : '#eab308';
+                fesCtx.fill();
+            });
+
+            // 3. Vẽ Ống nghiệm (2) - Đun nóng phản ứng (bên phải, x=270)
+            drawGlassTube(fesCtx, 270, 95, 36, 190, "Ống (2)", fesReactionDone ? "Hợp chất FeS" : "Hỗn hợp Fe + S", fesReactionDone || fesTube2Temp > 380, fesTube2Temp);
+
+            if (!fesReactionDone && fesTube2Temp <= 420) {
+                // Chưa phản ứng xong: vẽ các hạt bột Fe + S
+                tube2Particles.forEach(p => {
+                    let baseY = p.unmixedY * (1 - fesMixProgress) + p.mixedY * fesMixProgress;
+                    fesCtx.beginPath();
+                    fesCtx.arc(270 + p.rx, baseY, 2.3, 0, Math.PI * 2);
+                    fesCtx.fillStyle = p.isIron ? '#334155' : '#eab308';
+                    fesCtx.fill();
+                });
+            } else {
+                // Đã tạo thành khối rắn xám đen Sắt(II) sulfide (FeS)
+                fesCtx.save();
+                fesCtx.beginPath();
+                fesCtx.roundRect(254, 218, 32, 63, [2, 2, 14, 14]);
+                fesCtx.fillStyle = '#1e293b';
+                fesCtx.fill();
+
+                // Hiệu ứng ánh đỏ rực của phản ứng tỏa nhiệt khi đang nóng
+                if (fesTube2Temp > 120) {
+                    let glowAlpha = Math.min(0.85, (fesTube2Temp - 120) / 500);
+                    fesCtx.fillStyle = `rgba(239, 68, 68, ${glowAlpha})`;
+                    fesCtx.fill();
+                }
+                fesCtx.restore();
+            }
+
+            // Vẽ các tia sáng rực cháy bên trong khối phản ứng ống 2
+            fesSparks.forEach(sp => {
+                fesCtx.beginPath();
+                fesCtx.arc(sp.x, sp.y, sp.r, 0, Math.PI * 2);
+                fesCtx.fillStyle = `rgba(253, 224, 71, ${sp.life})`;
+                fesCtx.fill();
+            });
+
+            // Vẽ khói bốc lên trong ống 2
+            fesSmokes.forEach(sm => {
+                fesCtx.beginPath();
+                fesCtx.arc(sm.x, sm.y, sm.r, 0, Math.PI * 2);
+                fesCtx.fillStyle = `rgba(234, 179, 8, ${sm.alpha})`;
+                fesCtx.fill();
+            });
+
+            // 4. Vẽ Đèn cồn (trượt vào dưới ống 2 khi đun)
+            drawAlcoholBurner(fesCtx, fesBurnerX, 300, fesHeating);
+
+            // 5. Vẽ Thanh Nam Châm chữ U / Thanh thẳng có cực N-S
+            drawMagnet(fesCtx, fesMagnetX, fesMagnetY, fesMagnetTarget === 'tube2');
+
+            // 6. KÍNH HIỂN VI NGUYÊN TỬ (Góc phải màn hình)
+            if (document.getElementById('toggleFesAtoms').checked) {
+                drawFesMicroscope();
+            }
+        }
+
+        function drawGlassTube(ctx, cx, topY, w, h, title, subTitle, isDarkened, temp) {
+            ctx.save();
+            // Ánh hồng nhiệt ở đáy ống khi đun nóng
+            if (temp > 100) {
+                let heatAlpha = Math.min(0.45, (temp - 100) / 800);
+                ctx.fillStyle = `rgba(249, 115, 22, ${heatAlpha})`;
+                ctx.beginPath();
+                ctx.roundRect(cx - w/2 - 2, topY + h - 75, w + 4, 77, [0, 0, 18, 18]);
+                ctx.fill();
+            }
+
+            // Thân ống thủy tinh
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.roundRect(cx - w/2, topY, w, h, [2, 2, 18, 18]);
+            ctx.fill();
+            ctx.stroke();
+
+            // Vành miệng ống nghiệm
+            ctx.beginPath();
+            ctx.roundRect(cx - w/2 - 3, topY - 3, w + 6, 6, 3);
+            ctx.fillStyle = '#cbd5e1';
+            ctx.fill();
+            ctx.stroke();
+
+            // Nhãn tên ống nghiệm phía trên
+            ctx.fillStyle = '#0f172a';
+            ctx.font = 'bold 12px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(title, cx, topY - 22);
+            ctx.fillStyle = '#475569';
+            ctx.font = '11px sans-serif';
+            ctx.fillText(subTitle, cx, topY - 9);
+            ctx.restore();
+        }
+
+        function drawAlcoholBurner(ctx, cx, topY, isLit) {
+            ctx.save();
+            // Bầu đèn cồn thủy tinh
+            ctx.fillStyle = 'rgba(224, 242, 254, 0.85)';
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 1.8;
+            ctx.beginPath();
+            ctx.roundRect(cx - 22, topY + 6, 44, 34, 8);
+            ctx.fill();
+            ctx.stroke();
+
+            // Cồn lỏng
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.35)';
+            ctx.fillRect(cx - 20, topY + 20, 40, 18);
+
+            // Cổ bấc
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillRect(cx - 5, topY - 2, 10, 8);
+
+            // Ngọn lửa khi bật
+            if (isLit) {
+                let flicker = Math.sin(Date.now() / 55) * 2.5;
+                ctx.beginPath();
+                ctx.moveTo(cx - 7, topY - 2);
+                ctx.quadraticCurveTo(cx - 12, topY - 20, cx + flicker, topY - 36);
+                ctx.quadraticCurveTo(cx + 12, topY - 20, cx + 7, topY - 2);
+                ctx.fillStyle = 'rgba(249, 115, 22, 0.88)';
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.moveTo(cx - 3.5, topY - 2);
+                ctx.quadraticCurveTo(cx - 6, topY - 12, cx + flicker * 0.4, topY - 22);
+                ctx.quadraticCurveTo(cx + 6, topY - 12, cx + 3.5, topY - 2);
+                ctx.fillStyle = '#38bdf8';
+                ctx.fill();
+            }
+            ctx.restore();
+        }
+
+        function drawMagnet(ctx, cx, cy, flipPoles) {
+            ctx.save();
+            ctx.translate(cx, cy);
+            // Thanh nam châm 2 cực Đỏ (N) - Xanh (S)
+            ctx.shadowColor = 'rgba(15, 23, 42, 0.2)';
+            ctx.shadowBlur = 6;
+            ctx.shadowOffsetY = 3;
+
+            // Nửa trái
+            ctx.fillStyle = flipPoles ? '#e11d48' : '#2563eb';
+            ctx.beginPath();
+            ctx.roundRect(-26, -12, 26, 24, [5, 0, 0, 5]);
+            ctx.fill();
+
+            // Nửa phải (hướng về phía ống nghiệm)
+            ctx.fillStyle = flipPoles ? '#2563eb' : '#e11d48';
+            ctx.beginPath();
+            ctx.roundRect(0, -12, 26, 24, [0, 5, 5, 0]);
+            ctx.fill();
+
+            ctx.shadowColor = 'transparent';
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 11px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(flipPoles ? 'N' : 'S', -13, 4);
+            ctx.fillText(flipPoles ? 'S' : 'N', 13, 4);
+
+            ctx.fillStyle = '#334155';
+            ctx.font = 'bold 10px sans-serif';
+            ctx.fillText("Nam châm", 0, 24);
+            ctx.restore();
+        }
+
+        function drawFesMicroscope() {
+            const boxX = 395;
+            const boxY = 30;
+            const boxW = 225;
+            const boxH = 285;
+
+            fesCtx.fillStyle = '#ffffff';
+            fesCtx.strokeStyle = '#cbd5e1';
+            fesCtx.lineWidth = 1.5;
+            fesCtx.beginPath();
+            fesCtx.roundRect(boxX, boxY, boxW, boxH, 12);
+            fesCtx.fill();
+            fesCtx.stroke();
+
+            fesCtx.fillStyle = '#0f172a';
+            fesCtx.font = 'bold 12px sans-serif';
+            fesCtx.textAlign = 'center';
+            fesCtx.fillText("🔬 Góc nhìn vi mô (Nguyên tử)", boxX + boxW / 2, boxY + 22);
+
+            const cx = boxX + boxW / 2;
+            const cy = boxY + 125;
+            const radius = 80;
+
+            fesCtx.save();
+            fesCtx.beginPath();
+            fesCtx.arc(cx, cy, radius, 0, Math.PI * 2);
+            fesCtx.fillStyle = '#f8fafc';
+            fesCtx.fill();
+            fesCtx.strokeStyle = '#4f46e5';
+            fesCtx.lineWidth = 2;
+            fesCtx.stroke();
+            fesCtx.clip();
+
+            // Cập nhật & vẽ các nguyên tử Fe (xám) và S (vàng)
+            fesAtoms.forEach((a, idx) => {
+                if (!fesReactionDone && fesTube2Temp < 420) {
+                    // Trước khi đun: Nguyên tử Fe và S chuyển động tách rời, độc lập
+                    let speed = fesHeating ? 2.2 : 0.7;
+                    a.feX += a.vx1 * speed;
+                    a.feY += a.vy1 * speed;
+                    a.sX += a.vx2 * speed;
+                    a.sY += a.vy2 * speed;
+
+                    if (a.feX < -65 || a.feX > 65) a.vx1 *= -1;
+                    if (a.feY < -65 || a.feY > 65) a.vy1 *= -1;
+                    if (a.sX < -65 || a.sX > 65) a.vx2 *= -1;
+                    if (a.sY < -65 || a.sY > 65) a.vy2 *= -1;
+                } else {
+                    // Sau phản ứng: Mỗi nguyên tử Fe liên kết chặt với 1 nguyên tử S tạo phân tử FeS
+                    a.feX += a.vx1 * 0.4;
+                    a.feY += a.vy1 * 0.4;
+                    if (a.feX < -60 || a.feX > 60) a.vx1 *= -1;
+                    if (a.feY < -60 || a.feY > 60) a.vy1 *= -1;
+
+                    let targetSX = a.feX + Math.cos(a.bondAngle) * 11;
+                    let targetSY = a.feY + Math.sin(a.bondAngle) * 11;
+                    a.sX += (targetSX - a.sX) * 0.15;
+                    a.sY += (targetSY - a.sY) * 0.15;
+
+                    // Vẽ thanh liên kết hóa học giữa Fe và S
+                    fesCtx.strokeStyle = '#0f172a';
+                    fesCtx.lineWidth = 2.5;
+                    fesCtx.beginPath();
+                    fesCtx.moveTo(cx + a.feX, cy + a.feY);
+                    fesCtx.lineTo(cx + a.sX, cy + a.sY);
+                    fesCtx.stroke();
+                }
+
+                // Nguyên tử Sắt (Fe - màu xám thép)
+                fesCtx.beginPath();
+                fesCtx.arc(cx + a.feX, cy + a.feY, 6, 0, Math.PI * 2);
+                fesCtx.fillStyle = '#475569';
+                fesCtx.fill();
+
+                // Nguyên tử Lưu huỳnh (S - màu vàng)
+                fesCtx.beginPath();
+                fesCtx.arc(cx + a.sX, cy + a.sY, 5.5, 0, Math.PI * 2);
+                fesCtx.fillStyle = '#eab308';
+                fesCtx.fill();
+            });
+
+            fesCtx.restore();
+
+            // Chú thích màu nguyên tử
+            fesCtx.font = '11px sans-serif';
+            fesCtx.textAlign = 'center';
+            fesCtx.fillStyle = '#475569';
+            fesCtx.fillText("⚫ Nguyên tử Sắt (Fe)   🟡 Lưu huỳnh (S)", cx, boxY + 225);
+
+            if (!fesReactionDone && fesTube2Temp < 420) {
+                fesCtx.fillStyle = '#0284c7';
+                fesCtx.font = 'bold 11px sans-serif';
+                fesCtx.fillText("Trước đun: Fe & S nằm tách rời nhau", cx, boxY + 246);
+                fesCtx.fillStyle = '#64748b';
+                fesCtx.font = '11px sans-serif';
+                fesCtx.fillText("(Chưa có chất mới tạo thành)", cx, boxY + 263);
+            } else {
+                fesCtx.fillStyle = '#e11d48';
+                fesCtx.font = 'bold 11px sans-serif';
+                fesCtx.fillText("Sau đun: Liên kết tạo chất mới FeS!", cx, boxY + 246);
+                fesCtx.fillStyle = '#059669';
+                fesCtx.font = '11px sans-serif';
+                fesCtx.fillText("(Fe + S → FeS : Biến đổi hóa học)", cx, boxY + 263);
+            }
+            fesCtx.textAlign = 'left';
+        }
+
+        // =========================================================================
+        // LOGIC THÍ NGHIỆM 2: HÓA HỌC (SỰ CHUYỂN THỂ CỦA NƯỚC - GIỮ NGUYÊN)
+        // =========================================================================
+        const chemCanvas = document.getElementById('chemCanvas');
+        const chemCtx = chemCanvas.getContext('2d');
+
+        let temperature = 0;        
+        let burnerOn = false;       
+        let coolingMode = false;    
+        let iceMeltProgress = 0.2;  
+        let waterAmount = 1.0;      
+
+        let bubbles = [];
+        let steams = [];
+        let molecules = [];
+
+        for (let i = 0; i < 28; i++) {
+            molecules.push({
+                baseX: (i % 7) * 16 - 48,
+                baseY: Math.floor(i / 7) * 16 - 24,
+                x: 0,
+                y: 0,
+                vx: (Math.random() - 0.5) * 2,
+                vy: (Math.random() - 0.5) * 2
+            });
+        }
+
+        function toggleBurner() {
+            burnerOn = !burnerOn;
+            coolingMode = false;
+            updateBurnerBtn();
+        }
+
+        function coolDownWater() {
+            burnerOn = false;
+            coolingMode = true;
+            updateBurnerBtn();
+        }
+
+        function updateBurnerBtn() {
+            const btn = document.getElementById('btnBurner');
+            if (burnerOn) {
+                btn.innerText = "🔥 Tắt đèn cồn";
+                btn.className = "action-btn btn-burner-on";
+            } else {
+                btn.innerText = "🔥 Bật đèn cồn";
+                btn.className = "action-btn btn-burner-off";
+            }
+        }
+
+        function manualTemp(val) {
+            burnerOn = false;
+            coolingMode = false;
+            updateBurnerBtn();
+            temperature = parseFloat(val);
+            if (temperature <= 0) {
+                iceMeltProgress = 0;
+                waterAmount = 1.0;
+            } else if (temperature < 15) {
+                iceMeltProgress = temperature / 15;
+                waterAmount = 1.0;
+            } else {
+                iceMeltProgress = 1;
+            }
+        }
+
+        function resetChemLab() {
+            temperature = 0;
+            burnerOn = false;
+            coolingMode = false;
+            iceMeltProgress = 0.15;
+            waterAmount = 1.0;
+            bubbles = [];
+            steams = [];
+            document.getElementById('tempSlider').value = 0;
+            updateBurnerBtn();
+        }
+
+        function updateChemPhysics() {
+            if (burnerOn) {
+                if (temperature < 0) {
+                    temperature += 0.15;
+                } else if (temperature === 0 && iceMeltProgress < 1) {
+                    iceMeltProgress += 0.004;
+                    if (iceMeltProgress >= 0.85) temperature += 0.05;
+                } else if (temperature < 100) {
+                    iceMeltProgress = Math.min(1, iceMeltProgress + 0.01);
+                    temperature += 0.18;
+                } else {
+                    temperature = 100;
+                    if (waterAmount > 0.35) {
+                        waterAmount -= 0.0004;
+                    }
+                }
+            } else if (coolingMode) {
+                if (temperature > -5) {
+                    temperature -= 0.2;
+                }
+                if (temperature <= 0) {
+                    iceMeltProgress = Math.max(0, iceMeltProgress - 0.005);
+                }
+                if (waterAmount < 1.0 && temperature < 80) {
+                    waterAmount += 0.0005;
+                }
+            } else {
+                if (temperature >= 0 && temperature < 25 && iceMeltProgress < 1) {
+                    iceMeltProgress += 0.0015;
+                    if (iceMeltProgress > 0.6) temperature += 0.03;
+                }
+            }
+
+            document.getElementById('tempSlider').value = Math.round(temperature);
+            document.getElementById('tempDisplay').innerText = temperature.toFixed(1) + " °C";
+
+            const stateEl = document.getElementById('stateDisplay');
+            if (temperature <= 0 && iceMeltProgress < 0.2) {
+                stateEl.innerText = "Thể rắn (Nước đá đông đặc)";
+                stateEl.style.color = "#0284c7";
+            } else if (iceMeltProgress < 1) {
+                stateEl.innerText = "Rắn + Lỏng (Nước đá đang nóng chảy)";
+                stateEl.style.color = "#0ea5e9";
+            } else if (temperature < 95) {
+                stateEl.innerText = "Thể lỏng (Nước lỏng)";
+                stateEl.style.color = "#2563eb";
+            } else {
+                stateEl.innerText = "Lỏng + Khí (Nước sôi & Bay hơi mạnh)";
+                stateEl.style.color = "#ea580c";
+            }
+
+            if (temperature > 65 && Math.random() < (temperature - 60) / 80) {
+                bubbles.push({
+                    x: 215 + Math.random() * 90,
+                    y: 235,
+                    r: 2 + Math.random() * 3.5,
+                    speed: 1 + (temperature - 60) / 20
+                });
+            }
+            for (let i = bubbles.length - 1; i >= 0; i--) {
+                bubbles[i].y -= bubbles[i].speed;
+                let surfaceY = 240 - (75 * waterAmount);
+                if (bubbles[i].y < surfaceY) {
+                    bubbles.splice(i, 1);
+                }
+            }
+
+            if (temperature > 75 && Math.random() < (temperature - 70) / 50) {
+                steams.push({
+                    x: 220 + Math.random() * 80,
+                    y: 240 - (75 * waterAmount) - 5,
+                    r: 6 + Math.random() * 6,
+                    alpha: 0.55,
+                    vx: (Math.random() - 0.5) * 0.6,
+                    vy: -1.2 - Math.random() * 0.8
+                });
+            }
+            for (let i = steams.length - 1; i >= 0; i--) {
+                steams[i].x += steams[i].vx;
+                steams[i].y += steams[i].vy;
+                steams[i].r += 0.15;
+                steams[i].alpha -= 0.008;
+                if (steams[i].alpha <= 0) steams.splice(i, 1);
+            }
+        }
+
+        function drawChemLab() {
+            chemCtx.clearRect(0, 0, chemCanvas.width, chemCanvas.height);
+
+            chemCtx.fillStyle = '#e2e8f0';
+            chemCtx.fillRect(20, 335, 600, 12);
+
+            chemCtx.fillStyle = '#475569';
+            chemCtx.fillRect(110, 325, 80, 10);
+            chemCtx.fillStyle = '#94a3b8';
+            chemCtx.fillRect(146, 35, 8, 290);
+            chemCtx.fillStyle = '#334155';
+            chemCtx.fillRect(142, 75, 130, 8);
+            chemCtx.beginPath();
+            chemCtx.arc(150, 79, 8, 0, Math.PI * 2);
+            chemCtx.fillStyle = '#0284c7';
+            chemCtx.fill();
+
+            chemCtx.strokeStyle = '#334155';
+            chemCtx.lineWidth = 4;
+            chemCtx.beginPath();
+            chemCtx.moveTo(205, 245); chemCtx.lineTo(185, 335);
+            chemCtx.moveTo(315, 245); chemCtx.lineTo(335, 335);
+            chemCtx.moveTo(260, 245); chemCtx.lineTo(260, 330);
+            chemCtx.stroke();
+            chemCtx.fillStyle = '#1e293b';
+            chemCtx.fillRect(195, 240, 130, 6);
+
+            chemCtx.fillStyle = 'rgba(224, 242, 254, 0.8)';
+            chemCtx.strokeStyle = '#64748b';
+            chemCtx.lineWidth = 2;
+            chemCtx.beginPath();
+            chemCtx.roundRect(235, 295, 50, 40, 10);
+            chemCtx.fill();
+            chemCtx.stroke();
+            chemCtx.fillStyle = 'rgba(56, 189, 248, 0.35)';
+            chemCtx.fillRect(237, 312, 46, 21);
+            chemCtx.fillStyle = '#94a3b8';
+            chemCtx.fillRect(254, 286, 12, 9);
+
+            if (burnerOn) {
+                let flicker = Math.sin(Date.now() / 60) * 3;
+                chemCtx.beginPath();
+                chemCtx.moveTo(252, 286);
+                chemCtx.quadraticCurveTo(245, 265, 260 + flicker, 246);
+                chemCtx.quadraticCurveTo(275, 265, 268, 286);
+                chemCtx.fillStyle = 'rgba(249, 115, 22, 0.85)';
+                chemCtx.fill();
+
+                chemCtx.beginPath();
+                chemCtx.moveTo(256, 286);
+                chemCtx.quadraticCurveTo(253, 274, 260 + flicker * 0.5, 264);
+                chemCtx.quadraticCurveTo(267, 274, 264, 286);
+                chemCtx.fillStyle = '#38bdf8';
+                chemCtx.fill();
+            }
+
+            const beakerX = 208;
+            const beakerY = 135;
+            const beakerW = 104;
+            const beakerH = 105;
+
+            let liquidHeight = (20 + 60 * iceMeltProgress) * waterAmount;
+            if (liquidHeight > 5) {
+                chemCtx.fillStyle = 'rgba(56, 189, 248, 0.35)';
+                chemCtx.fillRect(beakerX + 2, beakerY + beakerH - liquidHeight, beakerW - 4, liquidHeight - 2);
+            }
+
+            if (iceMeltProgress < 0.98) {
+                let iceScale = 1 - iceMeltProgress;
+                chemCtx.fillStyle = 'rgba(224, 242, 254, 0.9)';
+                chemCtx.strokeStyle = '#7dd3fc';
+                chemCtx.lineWidth = 1.5;
+
+                const icePositions = [
+                    {x: 220, y: 210}, {x: 248, y: 212}, {x: 276, y: 208},
+                    {x: 230, y: 185}, {x: 262, y: 186}, {x: 245, y: 165}
+                ];
+                icePositions.forEach((p, idx) => {
+                    if (idx / icePositions.length < iceScale) {
+                        let size = 22 * Math.max(0.35, iceScale);
+                        chemCtx.save();
+                        chemCtx.translate(p.x + 10, p.y + 10);
+                        chemCtx.rotate((idx % 2 === 0 ? 1 : -1) * 0.2);
+                        chemCtx.beginPath();
+                        chemCtx.roundRect(-size/2, -size/2, size, size, 4);
+                        chemCtx.fill();
+                        chemCtx.stroke();
+                        chemCtx.restore();
+                    }
+                });
+            }
+
+            chemCtx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            bubbles.forEach(b => {
+                chemCtx.beginPath();
+                chemCtx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+                chemCtx.fill();
+            });
+
+            chemCtx.strokeStyle = '#64748b';
+            chemCtx.lineWidth = 2.5;
+            chemCtx.beginPath();
+            chemCtx.moveTo(beakerX, beakerY);
+            chemCtx.lineTo(beakerX, beakerY + beakerH);
+            chemCtx.lineTo(beakerX + beakerW, beakerY + beakerH);
+            chemCtx.lineTo(beakerX + beakerW, beakerY);
+            chemCtx.stroke();
+
+            chemCtx.strokeStyle = '#94a3b8';
+            chemCtx.lineWidth = 1;
+            for (let m = 1; m <= 4; m++) {
+                let y = beakerY + beakerH - m * 20;
+                chemCtx.beginPath();
+                chemCtx.moveTo(beakerX + 5, y);
+                chemCtx.lineTo(beakerX + 18, y);
+                chemCtx.stroke();
+            }
+
+            const thermX = 266;
+            chemCtx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            chemCtx.strokeStyle = '#475569';
+            chemCtx.lineWidth = 1.5;
+            chemCtx.beginPath();
+            chemCtx.roundRect(thermX - 5, 30, 10, 185, 5);
+            chemCtx.fill();
+            chemCtx.stroke();
+
+            chemCtx.beginPath();
+            chemCtx.arc(thermX, 215, 7, 0, Math.PI * 2);
+            chemCtx.fillStyle = '#e11d48';
+            chemCtx.fill();
+
+            let mercuryHeight = Math.max(10, ((temperature + 10) / 120) * 165);
+            chemCtx.fillStyle = '#e11d48';
+            chemCtx.fillRect(thermX - 2, 212 - mercuryHeight, 4, mercuryHeight);
+
+            chemCtx.fillStyle = '#0f172a';
+            chemCtx.font = 'bold 12px sans-serif';
+            chemCtx.fillText(Math.round(temperature) + "°C", thermX + 12, 215 - mercuryHeight + 4);
+
+            steams.forEach(s => {
+                chemCtx.beginPath();
+                chemCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                chemCtx.fillStyle = `rgba(148, 163, 184, ${s.alpha})`;
+                chemCtx.fill();
+            });
+
+            if (document.getElementById('toggleMolecules').checked) {
+                drawMicroscopeView();
+            }
+        }
+
+        function drawMicroscopeView() {
+            const boxX = 390;
+            const boxY = 35;
+            const boxW = 225;
+            const boxH = 265;
+
+            chemCtx.fillStyle = '#ffffff';
+            chemCtx.strokeStyle = '#cbd5e1';
+            chemCtx.lineWidth = 1.5;
+            chemCtx.beginPath();
+            chemCtx.roundRect(boxX, boxY, boxW, boxH, 12);
+            chemCtx.fill();
+            chemCtx.stroke();
+
+            chemCtx.fillStyle = '#0f172a';
+            chemCtx.font = 'bold 12px sans-serif';
+            chemCtx.textAlign = 'center';
+            chemCtx.fillText("🔬 Góc nhìn vi mô (Phân tử H₂O)", boxX + boxW / 2, boxY + 22);
+
+            const cx = boxX + boxW / 2;
+            const cy = boxY + 130;
+            const radius = 82;
+
+            chemCtx.save();
+            chemCtx.beginPath();
+            chemCtx.arc(cx, cy, radius, 0, Math.PI * 2);
+            chemCtx.fillStyle = '#f8fafc';
+            chemCtx.fill();
+            chemCtx.strokeStyle = '#0284c7';
+            chemCtx.lineWidth = 2;
+            chemCtx.stroke();
+            chemCtx.clip();
+
+            molecules.forEach((m) => {
+                if (temperature <= 0 && iceMeltProgress < 0.3) {
+                    let targetX = cx + m.baseX;
+                    let targetY = cy + m.baseY + 15;
+                    m.x = targetX + (Math.random() - 0.5) * 1.5;
+                    m.y = targetY + (Math.random() - 0.5) * 1.5;
+                } else if (temperature < 95) {
+                    let speed = 0.5 + (temperature / 40);
+                    m.x += m.vx * speed;
+                    m.y += m.vy * speed;
+                    if (m.x < cx - 65 || m.x > cx + 65) m.vx *= -1;
+                    if (m.y < cy - 10 || m.y > cy + 68) m.vy *= -1;
+                    if (m.y < cy - 10) m.y = cy - 10;
+                } else {
+                    let speed = 2.8;
+                    m.x += m.vx * speed;
+                    m.y += m.vy * speed;
+                    if (m.x < cx - 72 || m.x > cx + 72) m.vx *= -1;
+                    if (m.y < cy - 72 || m.y > cy + 72) m.vy *= -1;
+                }
+
+                chemCtx.beginPath();
+                chemCtx.arc(m.x, m.y, 5, 0, Math.PI * 2);
+                chemCtx.fillStyle = '#ef4444';
+                chemCtx.fill();
+
+                chemCtx.beginPath();
+                chemCtx.arc(m.x - 4.5, m.y - 3, 2.8, 0, Math.PI * 2);
+                chemCtx.arc(m.x + 4.5, m.y - 3, 2.8, 0, Math.PI * 2);
+                chemCtx.fillStyle = '#94a3b8';
+                chemCtx.fill();
+            });
+
+            chemCtx.restore();
+
+            chemCtx.fillStyle = '#475569';
+            chemCtx.font = '11px sans-serif';
+            chemCtx.textAlign = 'center';
+            if (temperature <= 0 && iceMeltProgress < 0.3) {
+                chemCtx.fillText("Thể rắn: Phân tử xếp khít, dao động tại chỗ.", cx, boxY + 235);
+            } else if (temperature < 95) {
+                chemCtx.fillText("Thể lỏng: Phân tử trượt tự do lên nhau.", cx, boxY + 235);
+            } else {
+                chemCtx.fillText("Thể khí: Phân tử tách xa, bay hỗn loạn.", cx, boxY + 235);
+            }
+            chemCtx.fillStyle = '#059669';
+            chemCtx.font = 'bold 11px sans-serif';
+            chemCtx.fillText("Số lượng & cấu tạo H₂O giữ nguyên!", cx, boxY + 252);
+            chemCtx.textAlign = 'left';
+        }
+
+        // =========================================================================
+        // LOGIC THÍ NGHIỆM 1: VẬT LÝ (LÀM QUAY CỦA LỰC - GIỮ NGUYÊN HOÀN HẢO)
+        // =========================================================================
+        const physCanvas = document.getElementById('physCanvas');
+        const physCtx = physCanvas.getContext('2d');
+
+        let weights = {
+            '-5': 0, '-4': 0, '-3': 0, '-2': 0, '-1': 0,
+            '0': 0,
+            '1': 0, '2': 0, '3': 0, '4': 0, '5': 0
+        };
+        const labels = { '-5': 'A', '-3': 'B', '0': 'O', '5': 'C' };
+        let selectedWeightValue = 1;
+        let hoveredHole = null;
+        let currentAngle = 0;       
+        let angularVelocity = 0;    
+        const pivotX = 320;
+        const pivotY = 145;
+        const holeSpacing = 44;
+        const maxAngle = 0.42;      
+
+        function selectWeight(val) {
+            selectedWeightValue = val;
+            for (let i = 1; i <= 3; i++) {
+                document.getElementById(`btnW${i}`).className = (i === val) ? "weight-btn active" : "weight-btn";
+            }
+        }
+
+        function resetPhysLab() {
+            for (let key in weights) weights[key] = 0;
+        }
+
+        function getHoleScreenPosition(indexKey) {
+            const pos = parseInt(indexKey);
+            const localX = pos * holeSpacing;
+            const screenX = pivotX + localX * Math.cos(currentAngle);
+            const screenY = pivotY + localX * Math.sin(currentAngle);
+            return { x: screenX, y: screenY };
+        }
+
+        function updatePhysPhysics() {
+            let netTorque = 0;
+            let leftM = 0;
+            let rightM = 0;
+
+            for (let key in weights) {
+                let pos = parseInt(key);
+                let w = weights[key];
+                if (w > 0 && pos !== 0) {
+                    netTorque += w * pos * Math.cos(currentAngle);
+                    if (pos < 0) leftM += w * Math.abs(pos);
+                    if (pos > 0) rightM += w * pos;
+                }
+            }
+
+            let restoringTorque = -0.35 * Math.sin(currentAngle);
+            let angularAcceleration = (netTorque * 0.45 + restoringTorque) / 380;
+
+            angularVelocity += angularAcceleration;
+            angularVelocity *= 0.93; 
+            currentAngle += angularVelocity;
+
+            if (currentAngle > maxAngle) { currentAngle = maxAngle; angularVelocity *= -0.3; }
+            else if (currentAngle < -maxAngle) { currentAngle = -maxAngle; angularVelocity *= -0.3; }
+
+            document.getElementById('leftTorqueText').innerText = leftM + " (N·đv)";
+            document.getElementById('rightTorqueText').innerText = rightM + " (N·đv)";
+            let deg = (currentAngle * 180 / Math.PI).toFixed(1);
+            document.getElementById('angleText').innerText = (deg > 0 ? "+" : "") + deg + "°";
+
+            const resStatus = document.getElementById('resultStatus');
+            if (Math.abs(netTorque) < 0.05 && Math.abs(currentAngle) < 0.02) {
+                if (weights['0'] > 0 && leftM === 0 && rightM === 0) {
+                    resStatus.innerHTML = "Treo tại <b>trục O</b>: Giá của lực đi qua trục quay nên <span style='color:#059669'>thanh không quay</span>.";
+                } else {
+                    resStatus.innerHTML = "Thanh đang nằm <span style='color:#059669'>cân bằng theo phương ngang</span>.";
+                }
+            } else if (netTorque < -0.05) {
+                resStatus.innerHTML = "Lực bên trái làm thanh <span style='color:#e11d48'>quay ngược chiều kim đồng hồ</span> (đầu A đi xuống).";
+            } else if (netTorque > 0.05) {
+                resStatus.innerHTML = "Lực bên phải làm thanh <span style='color:#e11d48'>quay thuận chiều kim đồng hồ</span> (đầu C đi xuống).";
+            }
+        }
+
+        function drawPhysLab() {
+            physCtx.clearRect(0, 0, physCanvas.width, physCanvas.height);
+
+            physCtx.save();
+            physCtx.setLineDash([5, 5]);
+            physCtx.strokeStyle = 'rgba(100, 116, 139, 0.35)';
+            physCtx.beginPath();
+            physCtx.moveTo(50, pivotY); physCtx.lineTo(590, pivotY);
+            physCtx.stroke();
+            physCtx.restore();
+
+            physCtx.fillStyle = '#64748b';
+            physCtx.fillRect(pivotX - 7, pivotY, 14, 175);
+            physCtx.fillStyle = '#334155';
+            physCtx.beginPath();
+            physCtx.roundRect(pivotX - 75, 315, 150, 18, 6);
+            physCtx.fill();
+
+            physCtx.save();
+            physCtx.translate(pivotX, pivotY);
+            physCtx.rotate(currentAngle);
+
+            physCtx.fillStyle = '#eab308';
+            physCtx.beginPath();
+            physCtx.roundRect(-245, -11, 490, 22, 8);
+            physCtx.fill();
+            physCtx.strokeStyle = '#ca8a04';
+            physCtx.lineWidth = 1.5;
+            physCtx.stroke();
+
+            for (let key in weights) {
+                let pos = parseInt(key);
+                let x = pos * holeSpacing;
+
+                if (hoveredHole === key) {
+                    physCtx.beginPath();
+                    physCtx.arc(x, 0, 12, 0, Math.PI * 2);
+                    physCtx.fillStyle = 'rgba(2, 132, 199, 0.25)';
+                    physCtx.fill();
+                }
+
+                physCtx.beginPath();
+                physCtx.arc(x, 0, 4.5, 0, Math.PI * 2);
+                physCtx.fillStyle = '#1e293b';
+                physCtx.fill();
+
+                if (labels[key]) {
+                    physCtx.fillStyle = '#0f172a';
+                    physCtx.font = 'bold 13px sans-serif';
+                    physCtx.textAlign = 'center';
+                    physCtx.fillText(labels[key], x, -18);
+                }
+            }
+            physCtx.restore();
+
+            physCtx.beginPath();
+            physCtx.arc(pivotX, pivotY, 8, 0, Math.PI * 2);
+            physCtx.fillStyle = '#0284c7';
+            physCtx.fill();
+            physCtx.lineWidth = 2;
+            physCtx.strokeStyle = '#ffffff';
+            physCtx.stroke();
+
+            for (let key in weights) {
+                let count = weights[key];
+                if (count > 0) {
+                    const holePos = getHoleScreenPosition(key);
+                    physCtx.save();
+                    physCtx.strokeStyle = '#475569';
+                    physCtx.lineWidth = 2;
+                    physCtx.beginPath();
+                    physCtx.moveTo(holePos.x, holePos.y);
+                    physCtx.lineTo(holePos.x, holePos.y + 18);
+                    physCtx.stroke();
+
+                    for (let i = 0; i < count; i++) {
+                        let wy = holePos.y + 18 + i * 24;
+                        physCtx.fillStyle = '#334155';
+                        physCtx.beginPath();
+                        physCtx.roundRect(holePos.x - 12, wy, 24, 20, 4);
+                        physCtx.fill();
+                    }
+                    physCtx.fillStyle = '#d97706';
+                    physCtx.font = 'bold 12px sans-serif';
+                    physCtx.fillText(count + 'N', holePos.x + 16, holePos.y + 32);
+                    physCtx.restore();
+                }
+            }
+        }
+
+        physCanvas.addEventListener('mousemove', function(evt) {
+            const rect = physCanvas.getBoundingClientRect();
+            const mx = (evt.clientX - rect.left) * (physCanvas.width / rect.width);
+            const my = (evt.clientY - rect.top) * (physCanvas.height / rect.height);
+            hoveredHole = null;
+            for (let key in weights) {
+                const pos = getHoleScreenPosition(key);
+                if (Math.hypot(mx - pos.x, my - pos.y) < 18) { hoveredHole = key; break; }
+            }
+            const hint = document.getElementById('hoverHint');
+            if (hoveredHole !== null) {
+                let name = labels[hoveredHole] ? `vị trí ${labels[hoveredHole]}` : `lỗ số ${hoveredHole}`;
+                hint.innerText = `Đang chọn: ${name} (Hiện có ${weights[hoveredHole]} quả nặng)`;
+            } else {
+                hint.innerText = "Di chuột vào các lỗ trên thanh để chọn vị trí";
+            }
+        });
+
+        physCanvas.addEventListener('click', function() {
+            if (hoveredHole !== null) weights[hoveredHole] = (weights[hoveredHole] > 0) ? 0 : selectedWeightValue;
+        });
+
+        physCanvas.addEventListener('contextmenu', function(evt) {
+            evt.preventDefault();
+            if (hoveredHole !== null) weights[hoveredHole] = 0;
+        });
+
+        // =========================================================================
+        // VÒNG LẶP ANIMATION CHÍNH CHO CẢ 3 THÍ NGHIỆM
+        // =========================================================================
+        function mainLoop() {
+            if (currentTab === 'fes') {
+                updateFesPhysics();
+                drawFesLab();
+            } else if (currentTab === 'chem') {
+                updateChemPhysics();
+                drawChemLab();
+            } else {
+                updatePhysPhysics();
+                drawPhysLab();
+            }
+            requestAnimationFrame(mainLoop);
+        }
+
+        mainLoop();
+    </script>
+</body>
+</html>

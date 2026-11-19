@@ -1,0 +1,46 @@
+{
+  "project": "Study Lab",
+  "language": "vi",
+  "experiment_count": 9,
+  "subjects": [
+    "all",
+    "physics",
+    "chemistry",
+    "biology",
+    "technology"
+  ],
+  "grades": [
+    6,
+    7,
+    8,
+    9
+  ],
+  "lessons": [
+    2,
+    3,
+    12,
+    14,
+    18,
+    40
+  ],
+  "pages": [
+    "experiments/sat-phan-ung-voi-luu-huynh.html",
+    "experiments/su-chuyen-the-cua-nuoc.html",
+    "experiments/tac-dung-lam-quay-cua-luc.html",
+    "experiments/khao-sat-do-cao-cua-am.html",
+    "experiments/khao-sat-do-to-cua-am.html",
+    "experiments/am-thoa-dao-dong-phat-ra-am.html",
+    "experiments/tong-hop-thi-nghiem-khtn.html"
+  ],
+  "version": "1.7",
+  "mobile_optimized": true,
+  "responsive_layout": {
+    "mobile_max_width_px": 600,
+    "tablet_range_px": [
+      601,
+      900
+    ],
+    "desktop_min_width_px": 901,
+    "desktop_layout": "unchanged"
+  }
+}
